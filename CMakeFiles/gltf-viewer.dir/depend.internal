@@ -13,6 +13,7 @@ CMakeFiles/gltf-viewer.dir/apps/gltf-viewer/ViewerApplication.cpp.o
  /home/6im2/ejarcet/OpenGL/glTF-VIEWER-ROOT/gltf-viewer/apps/gltf-viewer/utils/filesystem.hpp
  /home/6im2/ejarcet/OpenGL/glTF-VIEWER-ROOT/gltf-viewer/apps/gltf-viewer/utils/gl_debug_output.hpp
  /home/6im2/ejarcet/OpenGL/glTF-VIEWER-ROOT/gltf-viewer/apps/gltf-viewer/utils/glfw.hpp
+ /home/6im2/ejarcet/OpenGL/glTF-VIEWER-ROOT/gltf-viewer/apps/gltf-viewer/utils/gltf.hpp
  /home/6im2/ejarcet/OpenGL/glTF-VIEWER-ROOT/gltf-viewer/apps/gltf-viewer/utils/shaders.hpp
  third-party/glad/include/KHR/khrplatform.h
  third-party/glad/include/glad/glad.h

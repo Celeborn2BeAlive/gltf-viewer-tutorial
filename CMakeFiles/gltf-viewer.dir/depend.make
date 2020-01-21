@@ -12,6 +12,7 @@ CMakeFiles/gltf-viewer.dir/apps/gltf-viewer/ViewerApplication.cpp.o: apps/gltf-v
 CMakeFiles/gltf-viewer.dir/apps/gltf-viewer/ViewerApplication.cpp.o: apps/gltf-viewer/utils/filesystem.hpp
 CMakeFiles/gltf-viewer.dir/apps/gltf-viewer/ViewerApplication.cpp.o: apps/gltf-viewer/utils/gl_debug_output.hpp
 CMakeFiles/gltf-viewer.dir/apps/gltf-viewer/ViewerApplication.cpp.o: apps/gltf-viewer/utils/glfw.hpp
+CMakeFiles/gltf-viewer.dir/apps/gltf-viewer/ViewerApplication.cpp.o: apps/gltf-viewer/utils/gltf.hpp
 CMakeFiles/gltf-viewer.dir/apps/gltf-viewer/ViewerApplication.cpp.o: apps/gltf-viewer/utils/shaders.hpp
 CMakeFiles/gltf-viewer.dir/apps/gltf-viewer/ViewerApplication.cpp.o: third-party/glad/include/KHR/khrplatform.h
 CMakeFiles/gltf-viewer.dir/apps/gltf-viewer/ViewerApplication.cpp.o: third-party/glad/include/glad/glad.h
