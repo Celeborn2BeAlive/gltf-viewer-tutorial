@@ -45,7 +45,8 @@ private:
   const std::string m_ImGuiIniFilename;
 
   bool loadGltfFile(tinygltf::Model & model);
-  
+  std::vector<GLuint> createBufferObjects(const tinygltf::Model &model);
+
   // Last to be initialized, first to be destroyed:
   GLFWHandle m_GLFWHandle{int(m_nWindowWidth), int(m_nWindowHeight),
       "glTF Viewer",
