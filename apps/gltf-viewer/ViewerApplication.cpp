@@ -10,6 +10,7 @@
 
 #include "utils/cameras.hpp"
 #include "utils/gltf.hpp"
+#include "utils/images.hpp"
 
 #include <stb_image_write.h>
 #include <tiny_gltf.h>
@@ -139,6 +140,29 @@ int ViewerApplication::run()
       }
     }
   };
+
+  // If we want to render in an image
+  if (!m_OutputPath.empty()) {
+    const auto numComponents = 3;
+    std::vector<unsigned char> pixels(
+        m_nWindowWidth * m_nWindowHeight * numComponents);
+    renderToImage(
+        m_nWindowWidth, m_nWindowHeight, numComponents, pixels.data(), [&]() {
+          const auto camera = cameraController.getCamera();
+          drawScene(camera);
+        });
+    // OpenGL has not the same convention for image axis than most image
+    // formats, so we flip on the Y axis
+    flipImageYAxis(
+        m_nWindowWidth, m_nWindowHeight, numComponents, pixels.data());
+
+    // Write png on disk
+    const auto strPath = m_OutputPath.string();
+    stbi_write_png(
+        strPath.c_str(), m_nWindowWidth, m_nWindowHeight, 3, pixels.data(), 0);
+
+    return 0; // Exit, in that mode we don't want to run interactive viewer
+  }
 
   // Loop until the user closes the window
   for (auto iterationCount = 0u; !m_GLFWHandle.shouldClose();
