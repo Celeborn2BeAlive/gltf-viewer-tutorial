@@ -17,6 +17,8 @@ void flipImageYAxis(
   }
 }
 
+void renderToImage(size_t width, size_t height, size_t numComponents,
+    unsigned char *outPixels, std::function<void()> drawScene);
 // Setup GL state in order to render in texture, call drawScene() then get the
 // texture from the GPU and store it on outPixels[0 : width * height *
 // numComponent]. Then restore the previous GL state.
@@ -26,5 +28,3 @@ void flipImageYAxis(
 // It means that if drawScene change GL_DRAW_FRAMEBUFFER, in must restore it
 // before doing final rendering (for example for deferred rendering,
 // GL_DRAW_FRAMEBUFFER must be restored before the shading pass).
-void renderToImage(size_t width, size_t height, size_t numComponents,
-    unsigned char *outPixels, std::function<void()> drawScene);
