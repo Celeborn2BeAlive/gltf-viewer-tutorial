@@ -5,6 +5,8 @@
 #include "utils/filesystem.hpp"
 #include "utils/shaders.hpp"
 
+#include <tiny_gltf.h>
+
 class ViewerApplication
 {
 public:
@@ -41,6 +43,9 @@ private:
 
   // Order is important here, see comment below
   const std::string m_ImGuiIniFilename;
+
+  bool loadGltfFile(tinygltf::Model & model);
+  
   // Last to be initialized, first to be destroyed:
   GLFWHandle m_GLFWHandle{int(m_nWindowWidth), int(m_nWindowHeight),
       "glTF Viewer",
