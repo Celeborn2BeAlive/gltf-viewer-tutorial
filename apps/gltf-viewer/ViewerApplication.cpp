@@ -150,11 +150,9 @@ int ViewerApplication::run()
     const auto numComponents = 3;
     std::vector<unsigned char> pixels(
         m_nWindowWidth * m_nWindowHeight * numComponents);
-    renderToImage(
-        m_nWindowWidth, m_nWindowHeight, numComponents, pixels.data(), [&]() {
-          const auto camera = cameraController.getCamera();
-          drawScene(camera);
-        });
+    const auto camera = cameraController.getCamera();
+    renderToImage(m_nWindowWidth, m_nWindowHeight, numComponents, pixels.data(),
+        [&]() { drawScene(camera); });
     // OpenGL has not the same convention for image axis than most image
     // formats, so we flip on the Y axis
     flipImageYAxis(
@@ -164,6 +162,16 @@ int ViewerApplication::run()
     const auto strPath = m_OutputPath.string();
     stbi_write_png(
         strPath.c_str(), m_nWindowWidth, m_nWindowHeight, 3, pixels.data(), 0);
+
+    if (!m_OutputArgs.empty()) {
+      std::ofstream outFile{m_OutputArgs};
+      outFile << "--lookat " << camera.eye().x << "," << camera.eye().y << ","
+              << camera.eye().z << "," << camera.center().x << ","
+              << camera.center().y << "," << camera.center().z << ","
+              << camera.up().x << "," << camera.up().y << "," << camera.up().z;
+      outFile << " --width " << m_nWindowWidth << " --height "
+              << m_nWindowHeight;
+    }
 
     return 0; // Exit, in that mode we don't want to run interactive viewer
   }
@@ -389,7 +397,8 @@ std::vector<GLuint> ViewerApplication::createVertexArrayObjects(
 ViewerApplication::ViewerApplication(const fs::path &appPath, uint32_t width,
     uint32_t height, const fs::path &gltfFile,
     const std::vector<float> &lookatArgs, const std::string &vertexShader,
-    const std::string &fragmentShader, const fs::path &output) :
+    const std::string &fragmentShader, const fs::path &output,
+    const fs::path &outputArgs) :
     m_nWindowWidth(width),
     m_nWindowHeight(height),
     m_AppPath{appPath},
@@ -397,7 +406,8 @@ ViewerApplication::ViewerApplication(const fs::path &appPath, uint32_t width,
     m_ImGuiIniFilename{m_AppName + ".imgui.ini"},
     m_ShadersRootPath{m_AppPath.parent_path() / "shaders"},
     m_gltfFilePath{gltfFile},
-    m_OutputPath{output}
+    m_OutputPath{output},
+    m_OutputArgs{outputArgs}
 {
   if (!lookatArgs.empty()) {
     m_hasUserCamera = true;

@@ -1,59 +1,59 @@
-gltf-viewer viewer $GLTF_MODELS_PATH/2CylinderEngine/glTF/2CylinderEngine.gltf --output $REF_IMG_DIR/2CylinderEngine.png
-gltf-viewer viewer $GLTF_MODELS_PATH/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf --output $REF_IMG_DIR/AlphaBlendModeTest.png
-gltf-viewer viewer $GLTF_MODELS_PATH/AnimatedCube/glTF/AnimatedCube.gltf --output $REF_IMG_DIR/AnimatedCube.png
-gltf-viewer viewer $GLTF_MODELS_PATH/AnimatedMorphCube/glTF/AnimatedMorphCube.gltf --output $REF_IMG_DIR/AnimatedMorphCube.png
-gltf-viewer viewer $GLTF_MODELS_PATH/AnimatedMorphSphere/glTF/AnimatedMorphSphere.gltf --output $REF_IMG_DIR/AnimatedMorphSphere.png
-gltf-viewer viewer $GLTF_MODELS_PATH/AnimatedTriangle/glTF/AnimatedTriangle.gltf --output $REF_IMG_DIR/AnimatedTriangle.png
-gltf-viewer viewer $GLTF_MODELS_PATH/AntiqueCamera/glTF/AntiqueCamera.gltf --output $REF_IMG_DIR/AntiqueCamera.png
-gltf-viewer viewer $GLTF_MODELS_PATH/Avocado/glTF/Avocado.gltf --output $REF_IMG_DIR/Avocado.png
-gltf-viewer viewer $GLTF_MODELS_PATH/BarramundiFish/glTF/BarramundiFish.gltf --output $REF_IMG_DIR/BarramundiFish.png
-gltf-viewer viewer $GLTF_MODELS_PATH/BoomBox/glTF/BoomBox.gltf --output $REF_IMG_DIR/BoomBox.png
-gltf-viewer viewer $GLTF_MODELS_PATH/BoomBoxWithAxes/glTF/BoomBoxWithAxes.gltf --output $REF_IMG_DIR/BoomBoxWithAxes.png
-gltf-viewer viewer $GLTF_MODELS_PATH/Box/glTF/Box.gltf --output $REF_IMG_DIR/Box.png
-gltf-viewer viewer $GLTF_MODELS_PATH/BoxAnimated/glTF/BoxAnimated.gltf --output $REF_IMG_DIR/BoxAnimated.png
-gltf-viewer viewer $GLTF_MODELS_PATH/BoxInterleaved/glTF/BoxInterleaved.gltf --output $REF_IMG_DIR/BoxInterleaved.png
-gltf-viewer viewer $GLTF_MODELS_PATH/BoxTextured/glTF/BoxTextured.gltf --output $REF_IMG_DIR/BoxTextured.png
-gltf-viewer viewer $GLTF_MODELS_PATH/BoxTexturedNonPowerOfTwo/glTF/BoxTexturedNonPowerOfTwo.gltf --output $REF_IMG_DIR/BoxTexturedNonPowerOfTwo.png
-gltf-viewer viewer $GLTF_MODELS_PATH/BoxVertexColors/glTF/BoxVertexColors.gltf --output $REF_IMG_DIR/BoxVertexColors.png
-gltf-viewer viewer $GLTF_MODELS_PATH/BrainStem/glTF/BrainStem.gltf --output $REF_IMG_DIR/BrainStem.png
-gltf-viewer viewer $GLTF_MODELS_PATH/Buggy/glTF/Buggy.gltf --output $REF_IMG_DIR/Buggy.png
-gltf-viewer viewer $GLTF_MODELS_PATH/Cameras/glTF/Cameras.gltf --output $REF_IMG_DIR/Cameras.png
-gltf-viewer viewer $GLTF_MODELS_PATH/CesiumMan/glTF/CesiumMan.gltf --output $REF_IMG_DIR/CesiumMan.png
-gltf-viewer viewer $GLTF_MODELS_PATH/CesiumMilkTruck/glTF/CesiumMilkTruck.gltf --output $REF_IMG_DIR/CesiumMilkTruck.png
-gltf-viewer viewer $GLTF_MODELS_PATH/Corset/glTF/Corset.gltf --output $REF_IMG_DIR/Corset.png
-gltf-viewer viewer $GLTF_MODELS_PATH/Cube/glTF/Cube.gltf --output $REF_IMG_DIR/Cube.png
-gltf-viewer viewer $GLTF_MODELS_PATH/DamagedHelmet/glTF/DamagedHelmet.gltf --output $REF_IMG_DIR/DamagedHelmet.png
-gltf-viewer viewer $GLTF_MODELS_PATH/Duck/glTF/Duck.gltf --output $REF_IMG_DIR/Duck.png
-gltf-viewer viewer $GLTF_MODELS_PATH/EnvironmentTest/glTF/EnvironmentTest.gltf --output $REF_IMG_DIR/EnvironmentTest.png
-gltf-viewer viewer $GLTF_MODELS_PATH/FlightHelmet/glTF/FlightHelmet.gltf --output $REF_IMG_DIR/FlightHelmet.png
-gltf-viewer viewer $GLTF_MODELS_PATH/GearboxAssy/glTF/GearboxAssy.gltf --output $REF_IMG_DIR/GearboxAssy.png
-gltf-viewer viewer $GLTF_MODELS_PATH/InterpolationTest/glTF/InterpolationTest.gltf --output $REF_IMG_DIR/InterpolationTest.png
-gltf-viewer viewer $GLTF_MODELS_PATH/Lantern/glTF/Lantern.gltf --output $REF_IMG_DIR/Lantern.png
-gltf-viewer viewer $GLTF_MODELS_PATH/MetalRoughSpheres/glTF/MetalRoughSpheres.gltf --output $REF_IMG_DIR/MetalRoughSpheres.png
-gltf-viewer viewer $GLTF_MODELS_PATH/MetalRoughSpheresNoTextures/glTF/MetalRoughSpheresNoTextures.gltf --output $REF_IMG_DIR/MetalRoughSpheresNoTextures.png
-gltf-viewer viewer $GLTF_MODELS_PATH/Monster/glTF/Monster.gltf --output $REF_IMG_DIR/Monster.png
-gltf-viewer viewer $GLTF_MODELS_PATH/MorphPrimitivesTest/glTF/MorphPrimitivesTest.gltf --output $REF_IMG_DIR/MorphPrimitivesTest.png
-gltf-viewer viewer $GLTF_MODELS_PATH/MultiUVTest/glTF/MultiUVTest.gltf --output $REF_IMG_DIR/MultiUVTest.png
-gltf-viewer viewer $GLTF_MODELS_PATH/NormalTangentMirrorTest/glTF/NormalTangentMirrorTest.gltf --output $REF_IMG_DIR/NormalTangentMirrorTest.png
-gltf-viewer viewer $GLTF_MODELS_PATH/NormalTangentTest/glTF/NormalTangentTest.gltf --output $REF_IMG_DIR/NormalTangentTest.png
-gltf-viewer viewer $GLTF_MODELS_PATH/OrientationTest/glTF/OrientationTest.gltf --output $REF_IMG_DIR/OrientationTest.png
-gltf-viewer viewer $GLTF_MODELS_PATH/ReciprocatingSaw/glTF/ReciprocatingSaw.gltf --output $REF_IMG_DIR/ReciprocatingSaw.png
-gltf-viewer viewer $GLTF_MODELS_PATH/RiggedFigure/glTF/RiggedFigure.gltf --output $REF_IMG_DIR/RiggedFigure.png
-gltf-viewer viewer $GLTF_MODELS_PATH/RiggedSimple/glTF/RiggedSimple.gltf --output $REF_IMG_DIR/RiggedSimple.png
-gltf-viewer viewer $GLTF_MODELS_PATH/SciFiHelmet/glTF/SciFiHelmet.gltf --output $REF_IMG_DIR/SciFiHelmet.png
-gltf-viewer viewer $GLTF_MODELS_PATH/SimpleMeshes/glTF/SimpleMeshes.gltf --output $REF_IMG_DIR/SimpleMeshes.png
-gltf-viewer viewer $GLTF_MODELS_PATH/SimpleMorph/glTF/SimpleMorph.gltf --output $REF_IMG_DIR/SimpleMorph.png
-gltf-viewer viewer $GLTF_MODELS_PATH/SimpleSparseAccessor/glTF/SimpleSparseAccessor.gltf --output $REF_IMG_DIR/SimpleSparseAccessor.png
-gltf-viewer viewer $GLTF_MODELS_PATH/SpecGlossVsMetalRough/glTF/SpecGlossVsMetalRough.gltf --output $REF_IMG_DIR/SpecGlossVsMetalRough.png
-gltf-viewer viewer $GLTF_MODELS_PATH/Sponza/glTF/Sponza.gltf --output $REF_IMG_DIR/Sponza.png
-gltf-viewer viewer $GLTF_MODELS_PATH/Suzanne/glTF/Suzanne.gltf --output $REF_IMG_DIR/Suzanne.png
-gltf-viewer viewer $GLTF_MODELS_PATH/TextureCoordinateTest/glTF/TextureCoordinateTest.gltf --output $REF_IMG_DIR/TextureCoordinateTest.png
-gltf-viewer viewer $GLTF_MODELS_PATH/TextureSettingsTest/glTF/TextureSettingsTest.gltf --output $REF_IMG_DIR/TextureSettingsTest.png
-gltf-viewer viewer $GLTF_MODELS_PATH/TextureTransformTest/glTF/TextureTransformTest.gltf --output $REF_IMG_DIR/TextureTransformTest.png
-gltf-viewer viewer $GLTF_MODELS_PATH/Triangle/glTF/Triangle.gltf --output $REF_IMG_DIR/Triangle.png
-gltf-viewer viewer $GLTF_MODELS_PATH/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf --output $REF_IMG_DIR/TriangleWithoutIndices.png
-gltf-viewer viewer $GLTF_MODELS_PATH/TwoSidedPlane/glTF/TwoSidedPlane.gltf --output $REF_IMG_DIR/TwoSidedPlane.png
-gltf-viewer viewer $GLTF_MODELS_PATH/UnlitTest/glTF/UnlitTest.gltf --output $REF_IMG_DIR/UnlitTest.png
-gltf-viewer viewer $GLTF_MODELS_PATH/VC/glTF/VC.gltf --output $REF_IMG_DIR/VC.png
-gltf-viewer viewer $GLTF_MODELS_PATH/VertexColorTest/glTF/VertexColorTest.gltf --output $REF_IMG_DIR/VertexColorTest.png
-gltf-viewer viewer $GLTF_MODELS_PATH/WaterBottle/glTF/WaterBottle.gltf --output $REF_IMG_DIR/WaterBottle.png
+gltf-viewer viewer $GLTF_MODELS_PATH/2CylinderEngine/glTF/2CylinderEngine.gltf --output $REF_IMG_DIR/2CylinderEngine.png --output-args $REF_IMG_DIR/2CylinderEngine.args
+gltf-viewer viewer $GLTF_MODELS_PATH/AlphaBlendModeTest/glTF/AlphaBlendModeTest.gltf --output $REF_IMG_DIR/AlphaBlendModeTest.png --output-args $REF_IMG_DIR/AlphaBlendModeTest.args
+gltf-viewer viewer $GLTF_MODELS_PATH/AnimatedCube/glTF/AnimatedCube.gltf --output $REF_IMG_DIR/AnimatedCube.png --output-args $REF_IMG_DIR/AnimatedCube.args
+gltf-viewer viewer $GLTF_MODELS_PATH/AnimatedMorphCube/glTF/AnimatedMorphCube.gltf --output $REF_IMG_DIR/AnimatedMorphCube.png --output-args $REF_IMG_DIR/AnimatedMorphCube.args
+gltf-viewer viewer $GLTF_MODELS_PATH/AnimatedMorphSphere/glTF/AnimatedMorphSphere.gltf --output $REF_IMG_DIR/AnimatedMorphSphere.png --output-args $REF_IMG_DIR/AnimatedMorphSphere.args
+gltf-viewer viewer $GLTF_MODELS_PATH/AnimatedTriangle/glTF/AnimatedTriangle.gltf --output $REF_IMG_DIR/AnimatedTriangle.png --output-args $REF_IMG_DIR/AnimatedTriangle.args
+gltf-viewer viewer $GLTF_MODELS_PATH/AntiqueCamera/glTF/AntiqueCamera.gltf --output $REF_IMG_DIR/AntiqueCamera.png --output-args $REF_IMG_DIR/AntiqueCamera.args
+gltf-viewer viewer $GLTF_MODELS_PATH/Avocado/glTF/Avocado.gltf --output $REF_IMG_DIR/Avocado.png --output-args $REF_IMG_DIR/Avocado.args
+gltf-viewer viewer $GLTF_MODELS_PATH/BarramundiFish/glTF/BarramundiFish.gltf --output $REF_IMG_DIR/BarramundiFish.png --output-args $REF_IMG_DIR/BarramundiFish.args
+gltf-viewer viewer $GLTF_MODELS_PATH/BoomBox/glTF/BoomBox.gltf --output $REF_IMG_DIR/BoomBox.png --output-args $REF_IMG_DIR/BoomBox.args
+gltf-viewer viewer $GLTF_MODELS_PATH/BoomBoxWithAxes/glTF/BoomBoxWithAxes.gltf --output $REF_IMG_DIR/BoomBoxWithAxes.png --output-args $REF_IMG_DIR/BoomBoxWithAxes.args
+gltf-viewer viewer $GLTF_MODELS_PATH/Box/glTF/Box.gltf --output $REF_IMG_DIR/Box.png --output-args $REF_IMG_DIR/Box.args
+gltf-viewer viewer $GLTF_MODELS_PATH/BoxAnimated/glTF/BoxAnimated.gltf --output $REF_IMG_DIR/BoxAnimated.png --output-args $REF_IMG_DIR/BoxAnimated.args
+gltf-viewer viewer $GLTF_MODELS_PATH/BoxInterleaved/glTF/BoxInterleaved.gltf --output $REF_IMG_DIR/BoxInterleaved.png --output-args $REF_IMG_DIR/BoxInterleaved.args
+gltf-viewer viewer $GLTF_MODELS_PATH/BoxTextured/glTF/BoxTextured.gltf --output $REF_IMG_DIR/BoxTextured.png --output-args $REF_IMG_DIR/BoxTextured.args
+gltf-viewer viewer $GLTF_MODELS_PATH/BoxTexturedNonPowerOfTwo/glTF/BoxTexturedNonPowerOfTwo.gltf --output $REF_IMG_DIR/BoxTexturedNonPowerOfTwo.png --output-args $REF_IMG_DIR/BoxTexturedNonPowerOfTwo.args
+gltf-viewer viewer $GLTF_MODELS_PATH/BoxVertexColors/glTF/BoxVertexColors.gltf --output $REF_IMG_DIR/BoxVertexColors.png --output-args $REF_IMG_DIR/BoxVertexColors.args
+gltf-viewer viewer $GLTF_MODELS_PATH/BrainStem/glTF/BrainStem.gltf --output $REF_IMG_DIR/BrainStem.png --output-args $REF_IMG_DIR/BrainStem.args
+gltf-viewer viewer $GLTF_MODELS_PATH/Buggy/glTF/Buggy.gltf --output $REF_IMG_DIR/Buggy.png --output-args $REF_IMG_DIR/Buggy.args
+gltf-viewer viewer $GLTF_MODELS_PATH/Cameras/glTF/Cameras.gltf --output $REF_IMG_DIR/Cameras.png --output-args $REF_IMG_DIR/Cameras.args
+gltf-viewer viewer $GLTF_MODELS_PATH/CesiumMan/glTF/CesiumMan.gltf --output $REF_IMG_DIR/CesiumMan.png --output-args $REF_IMG_DIR/CesiumMan.args
+gltf-viewer viewer $GLTF_MODELS_PATH/CesiumMilkTruck/glTF/CesiumMilkTruck.gltf --output $REF_IMG_DIR/CesiumMilkTruck.png --output-args $REF_IMG_DIR/CesiumMilkTruck.args
+gltf-viewer viewer $GLTF_MODELS_PATH/Corset/glTF/Corset.gltf --output $REF_IMG_DIR/Corset.png --output-args $REF_IMG_DIR/Corset.args
+gltf-viewer viewer $GLTF_MODELS_PATH/Cube/glTF/Cube.gltf --output $REF_IMG_DIR/Cube.png --output-args $REF_IMG_DIR/Cube.args
+gltf-viewer viewer $GLTF_MODELS_PATH/DamagedHelmet/glTF/DamagedHelmet.gltf --output $REF_IMG_DIR/DamagedHelmet.png --output-args $REF_IMG_DIR/DamagedHelmet.args
+gltf-viewer viewer $GLTF_MODELS_PATH/Duck/glTF/Duck.gltf --output $REF_IMG_DIR/Duck.png --output-args $REF_IMG_DIR/Duck.args
+gltf-viewer viewer $GLTF_MODELS_PATH/EnvironmentTest/glTF/EnvironmentTest.gltf --output $REF_IMG_DIR/EnvironmentTest.png --output-args $REF_IMG_DIR/EnvironmentTest.args
+gltf-viewer viewer $GLTF_MODELS_PATH/FlightHelmet/glTF/FlightHelmet.gltf --output $REF_IMG_DIR/FlightHelmet.png --output-args $REF_IMG_DIR/FlightHelmet.args
+gltf-viewer viewer $GLTF_MODELS_PATH/GearboxAssy/glTF/GearboxAssy.gltf --output $REF_IMG_DIR/GearboxAssy.png --output-args $REF_IMG_DIR/GearboxAssy.args
+gltf-viewer viewer $GLTF_MODELS_PATH/InterpolationTest/glTF/InterpolationTest.gltf --output $REF_IMG_DIR/InterpolationTest.png --output-args $REF_IMG_DIR/InterpolationTest.args
+gltf-viewer viewer $GLTF_MODELS_PATH/Lantern/glTF/Lantern.gltf --output $REF_IMG_DIR/Lantern.png --output-args $REF_IMG_DIR/Lantern.args
+gltf-viewer viewer $GLTF_MODELS_PATH/MetalRoughSpheres/glTF/MetalRoughSpheres.gltf --output $REF_IMG_DIR/MetalRoughSpheres.png --output-args $REF_IMG_DIR/MetalRoughSpheres.args
+gltf-viewer viewer $GLTF_MODELS_PATH/MetalRoughSpheresNoTextures/glTF/MetalRoughSpheresNoTextures.gltf --output $REF_IMG_DIR/MetalRoughSpheresNoTextures.png --output-args $REF_IMG_DIR/MetalRoughSpheresNoTextures.args
+gltf-viewer viewer $GLTF_MODELS_PATH/Monster/glTF/Monster.gltf --output $REF_IMG_DIR/Monster.png --output-args $REF_IMG_DIR/Monster.args
+gltf-viewer viewer $GLTF_MODELS_PATH/MorphPrimitivesTest/glTF/MorphPrimitivesTest.gltf --output $REF_IMG_DIR/MorphPrimitivesTest.png --output-args $REF_IMG_DIR/MorphPrimitivesTest.args
+gltf-viewer viewer $GLTF_MODELS_PATH/MultiUVTest/glTF/MultiUVTest.gltf --output $REF_IMG_DIR/MultiUVTest.png --output-args $REF_IMG_DIR/MultiUVTest.args
+gltf-viewer viewer $GLTF_MODELS_PATH/NormalTangentMirrorTest/glTF/NormalTangentMirrorTest.gltf --output $REF_IMG_DIR/NormalTangentMirrorTest.png --output-args $REF_IMG_DIR/NormalTangentMirrorTest.args
+gltf-viewer viewer $GLTF_MODELS_PATH/NormalTangentTest/glTF/NormalTangentTest.gltf --output $REF_IMG_DIR/NormalTangentTest.png --output-args $REF_IMG_DIR/NormalTangentTest.args
+gltf-viewer viewer $GLTF_MODELS_PATH/OrientationTest/glTF/OrientationTest.gltf --output $REF_IMG_DIR/OrientationTest.png --output-args $REF_IMG_DIR/OrientationTest.args
+gltf-viewer viewer $GLTF_MODELS_PATH/ReciprocatingSaw/glTF/ReciprocatingSaw.gltf --output $REF_IMG_DIR/ReciprocatingSaw.png --output-args $REF_IMG_DIR/ReciprocatingSaw.args
+gltf-viewer viewer $GLTF_MODELS_PATH/RiggedFigure/glTF/RiggedFigure.gltf --output $REF_IMG_DIR/RiggedFigure.png --output-args $REF_IMG_DIR/RiggedFigure.args
+gltf-viewer viewer $GLTF_MODELS_PATH/RiggedSimple/glTF/RiggedSimple.gltf --output $REF_IMG_DIR/RiggedSimple.png --output-args $REF_IMG_DIR/RiggedSimple.args
+gltf-viewer viewer $GLTF_MODELS_PATH/SciFiHelmet/glTF/SciFiHelmet.gltf --output $REF_IMG_DIR/SciFiHelmet.png --output-args $REF_IMG_DIR/SciFiHelmet.args
+gltf-viewer viewer $GLTF_MODELS_PATH/SimpleMeshes/glTF/SimpleMeshes.gltf --output $REF_IMG_DIR/SimpleMeshes.png --output-args $REF_IMG_DIR/SimpleMeshes.args
+gltf-viewer viewer $GLTF_MODELS_PATH/SimpleMorph/glTF/SimpleMorph.gltf --output $REF_IMG_DIR/SimpleMorph.png --output-args $REF_IMG_DIR/SimpleMorph.args
+gltf-viewer viewer $GLTF_MODELS_PATH/SimpleSparseAccessor/glTF/SimpleSparseAccessor.gltf --output $REF_IMG_DIR/SimpleSparseAccessor.png --output-args $REF_IMG_DIR/SimpleSparseAccessor.args
+gltf-viewer viewer $GLTF_MODELS_PATH/SpecGlossVsMetalRough/glTF/SpecGlossVsMetalRough.gltf --output $REF_IMG_DIR/SpecGlossVsMetalRough.png --output-args $REF_IMG_DIR/SpecGlossVsMetalRough.args
+gltf-viewer viewer $GLTF_MODELS_PATH/Sponza/glTF/Sponza.gltf --output $REF_IMG_DIR/Sponza.png --output-args $REF_IMG_DIR/Sponza.args --lookat -5.26056,6.59932,0.85661,-4.40144,6.23486,0.497347,0.342113,0.931131,-0.126476
+gltf-viewer viewer $GLTF_MODELS_PATH/Suzanne/glTF/Suzanne.gltf --output $REF_IMG_DIR/Suzanne.png --output-args $REF_IMG_DIR/Suzanne.args
+gltf-viewer viewer $GLTF_MODELS_PATH/TextureCoordinateTest/glTF/TextureCoordinateTest.gltf --output $REF_IMG_DIR/TextureCoordinateTest.png --output-args $REF_IMG_DIR/TextureCoordinateTest.args
+gltf-viewer viewer $GLTF_MODELS_PATH/TextureSettingsTest/glTF/TextureSettingsTest.gltf --output $REF_IMG_DIR/TextureSettingsTest.png --output-args $REF_IMG_DIR/TextureSettingsTest.args
+gltf-viewer viewer $GLTF_MODELS_PATH/TextureTransformTest/glTF/TextureTransformTest.gltf --output $REF_IMG_DIR/TextureTransformTest.png --output-args $REF_IMG_DIR/TextureTransformTest.args
+gltf-viewer viewer $GLTF_MODELS_PATH/Triangle/glTF/Triangle.gltf --output $REF_IMG_DIR/Triangle.png --output-args $REF_IMG_DIR/Triangle.args
+gltf-viewer viewer $GLTF_MODELS_PATH/TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf --output $REF_IMG_DIR/TriangleWithoutIndices.png --output-args $REF_IMG_DIR/TriangleWithoutIndices.args
+gltf-viewer viewer $GLTF_MODELS_PATH/TwoSidedPlane/glTF/TwoSidedPlane.gltf --output $REF_IMG_DIR/TwoSidedPlane.png --output-args $REF_IMG_DIR/TwoSidedPlane.args
+gltf-viewer viewer $GLTF_MODELS_PATH/UnlitTest/glTF/UnlitTest.gltf --output $REF_IMG_DIR/UnlitTest.png --output-args $REF_IMG_DIR/UnlitTest.args
+gltf-viewer viewer $GLTF_MODELS_PATH/VC/glTF/VC.gltf --output $REF_IMG_DIR/VC.png --output-args $REF_IMG_DIR/VC.args
+gltf-viewer viewer $GLTF_MODELS_PATH/VertexColorTest/glTF/VertexColorTest.gltf --output $REF_IMG_DIR/VertexColorTest.png --output-args $REF_IMG_DIR/VertexColorTest.args
+gltf-viewer viewer $GLTF_MODELS_PATH/WaterBottle/glTF/WaterBottle.gltf --output $REF_IMG_DIR/WaterBottle.png --output-args $REF_IMG_DIR/WaterBottle.args

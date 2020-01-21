@@ -13,7 +13,7 @@ public:
   ViewerApplication(const fs::path &appPath, uint32_t width, uint32_t height,
       const fs::path &gltfFile, const std::vector<float> &lookatArgs,
       const std::string &vertexShader, const std::string &fragmentShader,
-      const fs::path &output);
+      const fs::path &output, const fs::path &outputArgs);
 
   int run();
 
@@ -48,6 +48,7 @@ private:
   Camera m_userCamera;
 
   fs::path m_OutputPath;
+  fs::path m_OutputArgs;
 
   // Order is important here, see comment below
   const std::string m_ImGuiIniFilename;

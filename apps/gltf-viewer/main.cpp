@@ -43,6 +43,10 @@ int main(int argc, char **argv)
             "Output path to render the image. If specified no window is shown. "
             "Only png is supported.",
             {"o", "output"}};
+        args::ValueFlag<std::string> log{
+            parser, "log", "Output path for log file", {"log"}};
+        args::ValueFlag<std::string> outputArgs{parser, "output-args",
+            "Output file for rendering arguments", {"output-args"}};
         parser.Parse();
 
         std::vector<float> lookatParams;
@@ -64,7 +68,7 @@ int main(int argc, char **argv)
 
         ViewerApplication app{fs::path{argv[0]}, width, height, args::get(file),
             lookatParams, args::get(vertexShader), args::get(fragmentShader),
-            args::get(output)};
+            args::get(output), args::get(outputArgs)};
         returnCode = app.run();
       }};
 
