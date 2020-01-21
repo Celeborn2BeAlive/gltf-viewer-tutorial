@@ -87,7 +87,10 @@ int ViewerApplication::run()
 
     // Draw the scene referenced by gltf file
     if (model.defaultScene >= 0) {
-      // TODO Draw all nodes
+		for (const auto &nodeIdx : model.scenes[model.defaultScene].nodes){
+			drawNode(nodeIdx, glm::mat4(1));
+		}
+      	// TODO Draw all nodes
     }
   };
 
