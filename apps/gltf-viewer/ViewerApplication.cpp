@@ -60,6 +60,7 @@ int ViewerApplication::run()
 			Camera{glm::vec3(0, 0, 0), glm::vec3(0, 0, -1), glm::vec3(0, 1, 0)});
 	}
 
+	//loading the scene
 	tinygltf::Model model;
 	if (!loadGltfFile(model)){
 		return -1;
@@ -68,6 +69,25 @@ int ViewerApplication::run()
 	const auto bufferObjects = createBufferObjects(model);
 	std::vector<VaoRange> meshIndexToVaoRange;
 	std::vector<GLuint> VAOs = createVertexArrayObjects(model, bufferObjects, meshIndexToVaoRange);
+
+	//computing bounding box of the scene
+	glm::vec3 bboxMin;
+	glm::vec3 bboxMax;
+	computeSceneBounds(model, bboxMin, bboxMax);
+	glm::vec3 center = glm::vec3((bboxMin.x+bboxMax.x)/2, (bboxMin.y+bboxMax.y)/2, (bboxMin.z+bboxMax.z)/2);
+	glm::vec3 diag = glm::vec3(bboxMax.x-bboxMin.x, bboxMax.y-bboxMin.y, bboxMax.z-bboxMin.z);
+	glm::vec3 eye; 
+	//if a scene is flat:
+	if ((bboxMax.z - bboxMin.z) < 0.1){
+		eye = center + 2.f * glm::cross(diag, glm::vec3(0, 1, 0));
+	} else {
+		eye = center + diag;
+	}
+	cameraController.setCamera(Camera{eye, center, glm::vec3(0, 1, 0)});
+	/*float maxDistance = glm::gtx::norm::length2(diag);
+	if (maxDistance < 100){
+		maxDistance = 100;
+	}*/
 
 	// Setup OpenGL state for rendering
 	glEnable(GL_DEPTH_TEST);
@@ -128,9 +148,9 @@ int ViewerApplication::run()
 
 
 	if (!m_OutputPath.empty()){
-		std::vector<unsigned char> pixels(m_nWindowWidth*m_nWindowHeight, 0);
-		ViewerApplication::renderToImage(m_nWindowWidth, m_nWindowHeight, 3, pixels.data(), [&]() {drawScene(cameraController.getCamera());});
-		flipImageYAxis<unsigned char>(m_nWindowWidth, m_nWindowHeight, 3, pixels.data());
+		std::vector<unsigned char> pixels(m_nWindowWidth*m_nWindowHeight*3, 0);
+		renderToImage(m_nWindowWidth, m_nWindowHeight, 3, pixels.data(), [&]() {drawScene(cameraController.getCamera());});
+		flipImageYAxis(m_nWindowWidth, m_nWindowHeight, 3, pixels.data());
 		const auto strPath = m_OutputPath.string();
 		stbi_write_png(strPath.c_str(), m_nWindowWidth, m_nWindowHeight, 3, pixels.data(), 0);
 		return 0;

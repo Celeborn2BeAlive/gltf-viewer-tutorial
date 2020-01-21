@@ -355,6 +355,33 @@ apps/gltf-viewer/utils/gltf.cpp.s:
 	$(MAKE) -f CMakeFiles/gltf-viewer.dir/build.make CMakeFiles/gltf-viewer.dir/apps/gltf-viewer/utils/gltf.cpp.s
 .PHONY : apps/gltf-viewer/utils/gltf.cpp.s
 
+apps/gltf-viewer/utils/images.o: apps/gltf-viewer/utils/images.cpp.o
+
+.PHONY : apps/gltf-viewer/utils/images.o
+
+# target to build an object file
+apps/gltf-viewer/utils/images.cpp.o:
+	$(MAKE) -f CMakeFiles/gltf-viewer.dir/build.make CMakeFiles/gltf-viewer.dir/apps/gltf-viewer/utils/images.cpp.o
+.PHONY : apps/gltf-viewer/utils/images.cpp.o
+
+apps/gltf-viewer/utils/images.i: apps/gltf-viewer/utils/images.cpp.i
+
+.PHONY : apps/gltf-viewer/utils/images.i
+
+# target to preprocess a source file
+apps/gltf-viewer/utils/images.cpp.i:
+	$(MAKE) -f CMakeFiles/gltf-viewer.dir/build.make CMakeFiles/gltf-viewer.dir/apps/gltf-viewer/utils/images.cpp.i
+.PHONY : apps/gltf-viewer/utils/images.cpp.i
+
+apps/gltf-viewer/utils/images.s: apps/gltf-viewer/utils/images.cpp.s
+
+.PHONY : apps/gltf-viewer/utils/images.s
+
+# target to generate assembly for a file
+apps/gltf-viewer/utils/images.cpp.s:
+	$(MAKE) -f CMakeFiles/gltf-viewer.dir/build.make CMakeFiles/gltf-viewer.dir/apps/gltf-viewer/utils/images.cpp.s
+.PHONY : apps/gltf-viewer/utils/images.cpp.s
+
 third-party/glad/src/glad.o: third-party/glad/src/glad.c.o
 
 .PHONY : third-party/glad/src/glad.o
@@ -577,6 +604,9 @@ help:
 	@echo "... apps/gltf-viewer/utils/gltf.o"
 	@echo "... apps/gltf-viewer/utils/gltf.i"
 	@echo "... apps/gltf-viewer/utils/gltf.s"
+	@echo "... apps/gltf-viewer/utils/images.o"
+	@echo "... apps/gltf-viewer/utils/images.i"
+	@echo "... apps/gltf-viewer/utils/images.s"
 	@echo "... third-party/glad/src/glad.o"
 	@echo "... third-party/glad/src/glad.i"
 	@echo "... third-party/glad/src/glad.s"

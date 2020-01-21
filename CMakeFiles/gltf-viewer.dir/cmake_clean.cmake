@@ -8,6 +8,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/gltf-viewer.dir/apps/gltf-viewer/utils/cameras.cpp.o"
   "CMakeFiles/gltf-viewer.dir/apps/gltf-viewer/utils/gl_debug_output.cpp.o"
   "CMakeFiles/gltf-viewer.dir/apps/gltf-viewer/utils/gltf.cpp.o"
+  "CMakeFiles/gltf-viewer.dir/apps/gltf-viewer/utils/images.cpp.o"
   "CMakeFiles/gltf-viewer.dir/third-party/imgui-1.74/imgui.cpp.o"
   "CMakeFiles/gltf-viewer.dir/third-party/imgui-1.74/imgui_demo.cpp.o"
   "CMakeFiles/gltf-viewer.dir/third-party/imgui-1.74/imgui_draw.cpp.o"

@@ -51,8 +51,6 @@ private:
 
   std::vector<GLuint> createVertexArrayObjects( const tinygltf::Model &model, const std::vector<GLuint> &bufferObjects, std::vector<VaoRange> & meshIndexToVaoRange);
 
-  void renderToImage(size_t width, size_t height, size_t numComponents, unsigned char *outPixels, std::function<void()> drawScene);
-
   // Last to be initialized, first to be destroyed:
   GLFWHandle m_GLFWHandle{int(m_nWindowWidth), int(m_nWindowHeight),
       "glTF Viewer",
