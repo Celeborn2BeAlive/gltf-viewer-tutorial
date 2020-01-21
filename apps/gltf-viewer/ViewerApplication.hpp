@@ -5,6 +5,8 @@
 #include "utils/filesystem.hpp"
 #include "utils/shaders.hpp"
 
+#include <tiny_gltf.h>
+
 class ViewerApplication
 {
 public:
@@ -22,6 +24,8 @@ private:
     GLsizei begin; // Index of first element in vertexArrayObjects
     GLsizei count; // Number of elements in range
   };
+
+  bool loadGltfFile(tinygltf::Model &model);
 
   GLsizei m_nWindowWidth = 1280;
   GLsizei m_nWindowHeight = 720;
