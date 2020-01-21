@@ -72,16 +72,3 @@ void renderToImage(size_t width, size_t height, size_t numComponents,
   glBindTexture(GL_TEXTURE_2D, previousTextureObject);
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER, previousFramebufferObject);
 }
-
-#if 0
-
-
-  if (flipY) {
-    flipImageYAxis(width, height, numComponents, pixelData.data());
-  }
-
-  const auto strPath = m_OutputPath.string();
-  stbi_write_png(
-      strPath.c_str(), m_nWindowWidth, m_nWindowHeight, 3, pixelData.data(), 0);
-
-#endif
