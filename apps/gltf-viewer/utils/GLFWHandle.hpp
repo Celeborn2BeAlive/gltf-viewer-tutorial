@@ -103,3 +103,13 @@ inline void imguiRenderFrame()
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
+
+inline void printGLVersion()
+{
+  GLint glVersion[2];
+  glGetIntegerv(GL_MAJOR_VERSION, &glVersion[0]);
+  glGetIntegerv(GL_MINOR_VERSION, &glVersion[1]);
+
+  std::clog << "OpenGL Version " << glVersion[0] << "." << glVersion[1]
+            << std::endl;
+}
