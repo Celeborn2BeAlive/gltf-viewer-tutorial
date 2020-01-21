@@ -17,7 +17,6 @@ public:
 
   int run();
 
-private:
   // A range of indices in a vector containing Vertex Array Objects
   struct VaoRange
   {
@@ -25,6 +24,8 @@ private:
     GLsizei count; // Number of elements in range
   };
 
+
+private:
   GLsizei m_nWindowWidth = 1280;
   GLsizei m_nWindowHeight = 720;
 
@@ -45,7 +46,10 @@ private:
   const std::string m_ImGuiIniFilename;
 
   bool loadGltfFile(tinygltf::Model & model);
+ 
   std::vector<GLuint> createBufferObjects(const tinygltf::Model &model);
+
+  std::vector<GLuint> createVertexArrayObjects( const tinygltf::Model &model, const std::vector<GLuint> &bufferObjects, std::vector<VaoRange> & meshIndexToVaoRange);
 
   // Last to be initialized, first to be destroyed:
   GLFWHandle m_GLFWHandle{int(m_nWindowWidth), int(m_nWindowHeight),
