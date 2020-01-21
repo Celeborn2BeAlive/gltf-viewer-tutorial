@@ -53,7 +53,7 @@ void renderToImage(size_t width, size_t height, size_t numComponents,
   glDrawBuffers(1, drawBuffers);
 
   const auto framebufferStatus = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
-  assert(framebufferStatus != GL_FRAMEBUFFER_COMPLETE);
+  assert(framebufferStatus == GL_FRAMEBUFFER_COMPLETE);
 
   drawScene();
 
