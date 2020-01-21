@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <glad/glad.h>
+#include <iostream>
 
 void renderToImage(size_t width, size_t height, size_t numComponents,
     unsigned char *outPixels, std::function<void()> drawScene)
@@ -51,6 +52,18 @@ void renderToImage(size_t width, size_t height, size_t numComponents,
   assert(framebufferStatus != GL_FRAMEBUFFER_COMPLETE);
 
   drawScene();
+
+  GLint currentlyBoundFBO = 0;
+  glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &currentlyBoundFBO);
+  if (currentlyBoundFBO != framebufferObject) {
+    // Display a warning on clog
+    // It may not be an error because the drawScene() function might have render
+    // to the framebuffer but unbound it after.
+    std::clog
+        << "Warning: renderToImage - GL_DRAW_FRAMEBUFFER_BINDING has "
+           "changed during drawScene. It might lead to unexpected behavior."
+        << std::endl;
+  }
 
   glBindTexture(GL_TEXTURE_2D, textureObject);
   glGetTexImage(GL_TEXTURE_2D, 0, numComponents == 3 ? GL_RGB : GL_RGBA,
