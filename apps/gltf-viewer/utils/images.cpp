@@ -20,19 +20,23 @@ void renderToImage(size_t width, size_t height, size_t numComponents,
 
   glBindTexture(GL_TEXTURE_2D, textureObject);
 
+  // Lets avoid warnings
+  const auto w = GLsizei(width);
+  const auto h = GLsizei(height);
+
   // if we want better quality, we can use multisampling, but for testing
   // purpose it is useless todo replace with glTexStorage2DMultisample (in that
   // case need to todo glBlitFramebuffer in another one in order to be able to
   // glGetTexImage)
   // https://stackoverflow.com/questions/14019910/how-does-glteximage2dmultisample-work
-  glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA32F, width, height);
+  glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA32F, w, h);
 
   GLuint depthTexture;
   glGenTextures(1, &depthTexture);
 
   glBindTexture(GL_TEXTURE_2D, depthTexture);
 
-  glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT32F, width, height);
+  glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT32F, w, h);
 
   glBindTexture(GL_TEXTURE_2D, previousTextureObject);
 
