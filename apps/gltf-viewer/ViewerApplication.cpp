@@ -10,6 +10,7 @@
 
 #include "utils/cameras.hpp"
 #include "utils/gltf.hpp"
+#include "utils/images.hpp"
 
 #include <stb_image_write.h>
 #include <tiny_gltf.h>
@@ -28,61 +29,60 @@ void keyCallback(
 
 int ViewerApplication::run()
 {
-  // Loader shaders
-  const auto glslProgram =
-      compileProgram({m_ShadersRootPath / m_AppName / m_vertexShader,
-          m_ShadersRootPath / m_AppName / m_fragmentShader});
+	// Loader shaders
+	const auto glslProgram =
+		compileProgram({m_ShadersRootPath / m_AppName / m_vertexShader,
+			m_ShadersRootPath / m_AppName / m_fragmentShader});
 
-  const auto modelViewProjMatrixLocation =
-      glGetUniformLocation(glslProgram.glId(), "uModelViewProjMatrix");
-  const auto modelViewMatrixLocation =
-      glGetUniformLocation(glslProgram.glId(), "uModelViewMatrix");
-  const auto normalMatrixLocation =
-      glGetUniformLocation(glslProgram.glId(), "uNormalMatrix");
+	const auto modelViewProjMatrixLocation =
+		glGetUniformLocation(glslProgram.glId(), "uModelViewProjMatrix");
+	const auto modelViewMatrixLocation =
+		glGetUniformLocation(glslProgram.glId(), "uModelViewMatrix");
+	const auto normalMatrixLocation =
+		glGetUniformLocation(glslProgram.glId(), "uNormalMatrix");
 
-  // Build projection matrix
-  auto maxDistance = 500.f; // TODO use scene bounds instead to compute this
-  maxDistance = maxDistance > 0.f ? maxDistance : 100.f;
-  const auto projMatrix =
-      glm::perspective(70.f, float(m_nWindowWidth) / m_nWindowHeight,
-          0.001f * maxDistance, 1.5f * maxDistance);
+	// Build projection matrix
+	auto maxDistance = 500.f; // TODO use scene bounds instead to compute this
+	maxDistance = maxDistance > 0.f ? maxDistance : 100.f;
+	const auto projMatrix =
+		glm::perspective(70.f, float(m_nWindowWidth) / m_nWindowHeight,
+			0.001f * maxDistance, 1.5f * maxDistance);
 
-  // TODO Implement a new CameraController model and use it instead. Propose the
-  // choice from the GUI
-  FirstPersonCameraController cameraController{
-      m_GLFWHandle.window(), 0.5f * maxDistance};
-  if (m_hasUserCamera) {
-    cameraController.setCamera(m_userCamera);
-  } else {
-    // TODO Use scene bounds to compute a better default camera
-    cameraController.setCamera(
-        Camera{glm::vec3(0, 0, 0), glm::vec3(0, 0, -1), glm::vec3(0, 1, 0)});
-  }
+	// TODO Implement a new CameraController model and use it instead. Propose the
+	// choice from the GUI
+	FirstPersonCameraController cameraController{
+		m_GLFWHandle.window(), 0.5f * maxDistance};
+	if (m_hasUserCamera) {
+		cameraController.setCamera(m_userCamera);
+	} else {
+		// TODO Use scene bounds to compute a better default camera
+		cameraController.setCamera(
+			Camera{glm::vec3(0, 0, 0), glm::vec3(0, 0, -1), glm::vec3(0, 1, 0)});
+	}
 
-  tinygltf::Model model;
-  if (!loadGltfFile(model)){
-    return -1;
-  }
+	tinygltf::Model model;
+	if (!loadGltfFile(model)){
+		return -1;
+	}
 
-  const auto bufferObjects = createBufferObjects(model);
-  std::vector<VaoRange> meshIndexToVaoRange;
-  std::vector<GLuint> VAOs = createVertexArrayObjects(model, bufferObjects, meshIndexToVaoRange);
+	const auto bufferObjects = createBufferObjects(model);
+	std::vector<VaoRange> meshIndexToVaoRange;
+	std::vector<GLuint> VAOs = createVertexArrayObjects(model, bufferObjects, meshIndexToVaoRange);
 
-  // Setup OpenGL state for rendering
-  glEnable(GL_DEPTH_TEST);
-  glslProgram.use();
+	// Setup OpenGL state for rendering
+	glEnable(GL_DEPTH_TEST);
+	glslProgram.use();
 
-  // Lambda function to draw the scene
-  const auto drawScene = [&](const Camera &camera) {
-    glViewport(0, 0, m_nWindowWidth, m_nWindowHeight);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// Lambda function to draw the scene
+  	const auto drawScene = [&](const Camera &camera) {
+		glViewport(0, 0, m_nWindowWidth, m_nWindowHeight);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    const auto viewMatrix = camera.getViewMatrix();
+		const auto viewMatrix = camera.getViewMatrix();
 
-    // The recursive function that should draw a node
-    // We use a std::function because a simple lambda cannot be recursive
-    const std::function<void(int, const glm::mat4 &)> drawNode =
-        [&](int nodeIdx, const glm::mat4 &parentMatrix) {
+		// The recursive function that should draw a node
+		// We use a std::function because a simple lambda cannot be recursive
+		const std::function<void(int, const glm::mat4 &)> drawNode = [&](int nodeIdx, const glm::mat4 &parentMatrix) {
 			const auto &node = model.nodes[nodeIdx];
 			glm::mat4 modelMatrix = getLocalToWorldMatrix(node, parentMatrix);
 			int meshIdx = node.mesh;
@@ -108,7 +108,7 @@ int ViewerApplication::run()
 						glDrawElements(currentPrimitive.mode, accessor.count, accessor.componentType, (const GLvoid *)byteOffset);
 					} else {
 						const auto accessorIdx = (*begin(currentPrimitive.attributes)).second;
-                		const auto &accessor = model.accessors[accessorIdx];
+						const auto &accessor = model.accessors[accessorIdx];
 						glDrawArrays(currentPrimitive.mode, 0, accessor.count);
 					}
 				}
@@ -116,74 +116,84 @@ int ViewerApplication::run()
 			for (const auto &nodeIdx : node.children){
 				drawNode(nodeIdx, modelMatrix);
 			}
-        };
+		};
 
-    // Draw the scene referenced by gltf file
-    if (model.defaultScene >= 0) {
-		for (const auto &nodeIdx : model.scenes[model.defaultScene].nodes){
-			drawNode(nodeIdx, glm::mat4(1));
+		// Draw the scene referenced by gltf file
+		if (model.defaultScene >= 0) {
+			for (const auto &nodeIdx : model.scenes[model.defaultScene].nodes){
+				drawNode(nodeIdx, glm::mat4(1));
+			}
 		}
-    }
-  };
+	};
 
-  // Loop until the user closes the window
-  for (auto iterationCount = 0u; !m_GLFWHandle.shouldClose();
-       ++iterationCount) {
-    const auto seconds = glfwGetTime();
 
-    const auto camera = cameraController.getCamera();
-    drawScene(camera);
+	if (!m_OutputPath.empty()){
+		std::vector<unsigned char> pixels(m_nWindowWidth*m_nWindowHeight, 0);
+		ViewerApplication::renderToImage(m_nWindowWidth, m_nWindowHeight, 3, pixels.data(), [&]() {drawScene(cameraController.getCamera());});
+		flipImageYAxis<unsigned char>(m_nWindowWidth, m_nWindowHeight, 3, pixels.data());
+		const auto strPath = m_OutputPath.string();
+		stbi_write_png(strPath.c_str(), m_nWindowWidth, m_nWindowHeight, 3, pixels.data(), 0);
+		return 0;
+	}
 
-    // GUI code:
-    imguiNewFrame();
+	// Loop until the user closes the window
+	for (auto iterationCount = 0u; !m_GLFWHandle.shouldClose();
+		++iterationCount) {
+		const auto seconds = glfwGetTime();
 
-    {
-      ImGui::Begin("GUI");
-      ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-          1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-      if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen)) {
-        ImGui::Text("eye: %.3f %.3f %.3f", camera.eye().x, camera.eye().y,
-            camera.eye().z);
-        ImGui::Text("center: %.3f %.3f %.3f", camera.center().x,
-            camera.center().y, camera.center().z);
-        ImGui::Text(
-            "up: %.3f %.3f %.3f", camera.up().x, camera.up().y, camera.up().z);
+		const auto camera = cameraController.getCamera();
+		drawScene(camera);
 
-        ImGui::Text("front: %.3f %.3f %.3f", camera.front().x, camera.front().y,
-            camera.front().z);
-        ImGui::Text("left: %.3f %.3f %.3f", camera.left().x, camera.left().y,
-            camera.left().z);
+		// GUI code:
+		imguiNewFrame();
 
-        if (ImGui::Button("CLI camera args to clipboard")) {
-          std::stringstream ss;
-          ss << "--lookat " << camera.eye().x << "," << camera.eye().y << ","
-             << camera.eye().z << "," << camera.center().x << ","
-             << camera.center().y << "," << camera.center().z << ","
-             << camera.up().x << "," << camera.up().y << "," << camera.up().z;
-          const auto str = ss.str();
-          glfwSetClipboardString(m_GLFWHandle.window(), str.c_str());
-        }
-      }
-      ImGui::End();
-    }
+		{
+		ImGui::Begin("GUI");
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+			1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen)) {
+			ImGui::Text("eye: %.3f %.3f %.3f", camera.eye().x, camera.eye().y,
+				camera.eye().z);
+			ImGui::Text("center: %.3f %.3f %.3f", camera.center().x,
+				camera.center().y, camera.center().z);
+			ImGui::Text(
+				"up: %.3f %.3f %.3f", camera.up().x, camera.up().y, camera.up().z);
 
-    imguiRenderFrame();
+			ImGui::Text("front: %.3f %.3f %.3f", camera.front().x, camera.front().y,
+				camera.front().z);
+			ImGui::Text("left: %.3f %.3f %.3f", camera.left().x, camera.left().y,
+				camera.left().z);
 
-    glfwPollEvents(); // Poll for and process events
+			if (ImGui::Button("CLI camera args to clipboard")) {
+			std::stringstream ss;
+			ss << "--lookat " << camera.eye().x << "," << camera.eye().y << ","
+				<< camera.eye().z << "," << camera.center().x << ","
+				<< camera.center().y << "," << camera.center().z << ","
+				<< camera.up().x << "," << camera.up().y << "," << camera.up().z;
+			const auto str = ss.str();
+			glfwSetClipboardString(m_GLFWHandle.window(), str.c_str());
+			}
+		}
+		ImGui::End();
+		}
 
-    auto ellapsedTime = glfwGetTime() - seconds;
-    auto guiHasFocus =
-        ImGui::GetIO().WantCaptureMouse || ImGui::GetIO().WantCaptureKeyboard;
-    if (!guiHasFocus) {
-      cameraController.update(float(ellapsedTime));
-    }
+		imguiRenderFrame();
 
-    m_GLFWHandle.swapBuffers(); // Swap front and back buffers
-  }
+		glfwPollEvents(); // Poll for and process events
 
-  // TODO clean up allocated GL data
+		auto ellapsedTime = glfwGetTime() - seconds;
+		auto guiHasFocus =
+			ImGui::GetIO().WantCaptureMouse || ImGui::GetIO().WantCaptureKeyboard;
+		if (!guiHasFocus) {
+		cameraController.update(float(ellapsedTime));
+		}
 
-  return 0;
+		m_GLFWHandle.swapBuffers(); // Swap front and back buffers
+	}
+
+	// TODO clean up allocated GL data
+
+	return 0;
 }
 
 ViewerApplication::ViewerApplication(const fs::path &appPath, uint32_t width,
@@ -351,6 +361,6 @@ std::vector<GLuint> ViewerApplication::createVertexArrayObjects( const tinygltf:
 
     }
 	glBindVertexArray(0);
-	std::clog << "Number of VAOs: " << vertexArrayObjects.size() << std::endl;
+	//std::clog << "Number of VAOs: " << vertexArrayObjects.size() << std::endl;
     return vertexArrayObjects;
 }
