@@ -55,7 +55,9 @@ int ViewerApplication::run()
   }
 
   tinygltf::Model model;
-  // TODO Loading the glTF file
+  if (!loadGltfFile(model)) {
+    return -1;
+  }
 
   // TODO Creation of Buffer Objects
 
