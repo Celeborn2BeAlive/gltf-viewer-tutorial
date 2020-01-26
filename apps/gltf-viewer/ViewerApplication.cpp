@@ -61,6 +61,8 @@ int ViewerApplication::run()
   }
 
   // TODO Creation of Buffer Objects
+  const auto bufferObjects = creatBufferObjects(model);
+
 
   // TODO Creation of Vertex Array Objects
 
@@ -168,6 +170,18 @@ bool ViewerApplication::loadGltfFile(tinygltf::Model & model){
         return false;
     }
     return true;
+}
+
+std::vector<GLuint> ViewerApplication::creatBufferObjects(const tinygltf::Model & model){
+    int size  = model.buffers.size();
+    std::vector<GLuint> buffer(size, 0);
+    glGenBuffers(GLsizei(size), buffer.data());
+    for(int i=0; i< size; i++){
+        glBindBuffer(GL_ARRAY_BUFFER, buffer[i]);
+        glBufferStorage(GL_ARRAY_BUFFER, model.buffers[i].data.size(), model.buffers[i].data.data(), 0);
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    return buffer;
 }
 
 
