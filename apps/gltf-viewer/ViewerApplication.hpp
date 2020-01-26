@@ -1,5 +1,6 @@
 #pragma once
 
+#include <tiny_gltf.h>
 #include "utils/GLFWHandle.hpp"
 #include "utils/cameras.hpp"
 #include "utils/filesystem.hpp"
@@ -14,6 +15,7 @@ public:
       const fs::path &output);
 
   int run();
+  bool loadGltfFile(tinygltf::Model & model);
 
 private:
   // A range of indices in a vector containing Vertex Array Objects
