@@ -8,6 +8,13 @@
 
 class ViewerApplication
 {
+private:
+    // A range of indices in a vector containing Vertex Array Objects
+    struct VaoRange
+    {
+        GLsizei begin; // Index of first element in vertexArrayObjects
+        GLsizei count; // Number of elements in range
+    };
 public:
   ViewerApplication(const fs::path &appPath, uint32_t width, uint32_t height,
       const fs::path &gltfFile, const std::vector<float> &lookatArgs,
@@ -17,14 +24,10 @@ public:
   int run();
   bool loadGltfFile(tinygltf::Model & model);
   std::vector<GLuint> creatBufferObjects(const tinygltf::Model & model);
+  std::vector<GLuint> createVertexArrayObjects( const tinygltf::Model &model, const std::vector<GLuint> &bufferObjects, std::vector<VaoRange> & meshIndexToVaoRange);
 
 private:
-  // A range of indices in a vector containing Vertex Array Objects
-  struct VaoRange
-  {
-    GLsizei begin; // Index of first element in vertexArrayObjects
-    GLsizei count; // Number of elements in range
-  };
+
 
   GLsizei m_nWindowWidth = 1280;
   GLsizei m_nWindowHeight = 720;
