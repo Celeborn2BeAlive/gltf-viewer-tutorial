@@ -9,6 +9,7 @@
 #include <glm/gtx/io.hpp>
 
 #include "utils/cameras.hpp"
+#include "utils/gltf.hpp"
 
 #include <stb_image_write.h>
 #include <tiny_gltf.h>
@@ -84,6 +85,42 @@ int ViewerApplication::run()
     const std::function<void(int, const glm::mat4 &)> drawNode =
         [&](int nodeIdx, const glm::mat4 &parentMatrix) {
           // TODO The drawNode function
+            const auto &node = model.nodes[nodeIdx];
+            const glm::mat4 modelMatrix = getLocalToWorldMatrix(node, parentMatrix);
+
+            if (node.mesh >= 0) {
+                const auto mvMatrix = viewMatrix * modelMatrix;
+                const auto mvpMatrix = projMatrix * mvMatrix;
+                const auto normalMatrix = glm::transpose(glm::inverse(mvMatrix));
+
+                glUniformMatrix4fv(modelViewProjMatrixLocation, 1, GL_FALSE, glm::value_ptr(mvpMatrix));
+                glUniformMatrix4fv(modelViewMatrixLocation, 1, GL_FALSE, glm::value_ptr(mvMatrix));
+                glUniformMatrix4fv(normalMatrixLocation, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+
+                const auto &mesh = model.meshes[node.mesh];
+                const auto &vaoRange = meshToVertexArrays[node.mesh];
+                for (int i = 0; i < mesh.primitives.size(); ++i) {
+                    const auto vao = vertexArrayObjects[vaoRange.begin + i];
+                    const auto &primitive = mesh.primitives[i];
+                    glBindVertexArray(vao);
+
+                    if (primitive.indices >= 0) {
+                        const auto &accessor = model.accessors[primitive.indices];
+                        const auto &bufferView = model.bufferViews[accessor.bufferView];
+                        const auto byteOffset = accessor.byteOffset + bufferView.byteOffset;
+                        glDrawElements(primitive.mode, GLsizei(accessor.count),
+                                accessor.componentType, (const GLvoid *)byteOffset);
+                    } else {
+                        const auto accessorIdx = (*begin(primitive.attributes)).second;
+                        const auto &accessor = model.accessors[accessorIdx];
+                        glDrawArrays(primitive.mode, 0, GLsizei(accessor.count));
+                    }
+                }
+            }
+            for (auto nodeChild : node.children) {
+                drawNode(nodeChild, modelMatrix);
+            }
+
         };
 
     // Draw the scene referenced by gltf file
