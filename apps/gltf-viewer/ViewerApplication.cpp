@@ -45,6 +45,19 @@ bool ViewerApplication::loadGltfFile(tinygltf::Model &model) { // TODO Loading t
     return true;
 }
 
+std::vector<GLuint> ViewerApplication::createBufferObjects(const tinygltf::Model &model) { // TODO Creation of Buffer Objects
+    std::vector<GLuint> bufferObjects(model.buffers.size(), 0);
+
+    glGenBuffers(GLsizei(model.buffers.size()), bufferObjects.data());
+    for (size_t i = 0; i < model.buffers.size(); ++i) {
+        glBindBuffer(GL_ARRAY_BUFFER, bufferObjects[i]);
+        glBufferStorage(GL_ARRAY_BUFFER, model.buffers[i].data.size(), model.buffers[i].data.data(), 0);
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    return bufferObjects;
+}
+
 int ViewerApplication::run() {
     // Loader shaders
     const auto glslProgram = compileProgram({ m_ShadersRootPath / m_AppName / m_vertexShader,
@@ -77,6 +90,7 @@ int ViewerApplication::run() {
     }
 
     // TODO Creation of Buffer Objects
+    const auto bufferObjects = createBufferObjects(model);
 
     // TODO Creation of Vertex Array Objects
 
