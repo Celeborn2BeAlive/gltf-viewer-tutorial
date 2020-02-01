@@ -37,9 +37,18 @@ int ViewerApplication::run()
   const auto normalMatrixLocation =
       glGetUniformLocation(glslProgram.glId(), "uNormalMatrix");
 
+    tinygltf::Model model;
+    if (!loadGltfFile(model)) {
+        return -1;
+    }
+    glm::vec3 bboxMin, bboxMax;
+    computeSceneBounds(model, bboxMin, bboxMax);
+
   // Build projection matrix
-  auto maxDistance = 500.f; // TODO use scene bounds instead to compute this
-  maxDistance = maxDistance > 0.f ? maxDistance : 100.f;
+  //auto maxDistance = 500.f; // TODO use scene bounds instead to compute this
+  //maxDistance = maxDistance > 0.f ? maxDistance : 100.f;
+  const auto diag = bboxMax - bboxMin;
+  auto maxDistance = glm::length(diag);
   const auto projMatrix =
       glm::perspective(70.f, float(m_nWindowWidth) / m_nWindowHeight,
           0.001f * maxDistance, 1.5f * maxDistance);
@@ -52,15 +61,22 @@ int ViewerApplication::run()
     cameraController.setCamera(m_userCamera);
   } else {
     // TODO Use scene bounds to compute a better default camera
-    cameraController.setCamera(
-        Camera{glm::vec3(0, 0, 0), glm::vec3(0, 0, -1), glm::vec3(0, 1, 0)});
-  }
+    //cameraController.setCamera(
+        //Camera{glm::vec3(0, 0, 0), glm::vec3(0, 0, -1), glm::vec3(0, 1, 0)});
 
+      const auto center = 0.5f * (bboxMax + bboxMin);
+      const auto up = glm::vec3(0, 1, 0);
+      const auto eye =
+              diag.z > 0 ? center + diag : center + 2.f * glm::cross(diag, up);
+      cameraController.setCamera(Camera{eye, center, up});
+
+  }
+/*
   tinygltf::Model model;
   // TODO Loading the glTF file
   if(!loadGltfFile(model)){
       return -1;
-  }
+  }*/
 
   // TODO Creation of Buffer Objects
   const auto bufferObjects = creatBufferObjects(model);
