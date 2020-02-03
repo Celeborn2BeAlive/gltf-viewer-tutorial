@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
+
 cmake_policy(SET CMP0048 NEW)
 
 project(gltf-viewer-tutorial VERSION 0.0.1)
@@ -72,15 +73,31 @@ set(
     glfw
 )
 
-if(CMAKE_COMPILER_IS_GNUCXX AND NOT GLMLV_USE_BOOST_FILESYSTEM)
-    set(LIBRARIES ${LIBRARIES} stdc++fs)
-endif()
-
 if (GLMLV_USE_BOOST_FILESYSTEM)
     set(LIBRARIES ${LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
+else()
+    if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+        if(CMAKE_CXX_COMPILER_VERSION VERSION_LESSER "8.0.0")
+            set(LIBRARIES ${LIBRARIES} stdc++fs)
+        else()
+            set(LIBRARIES ${LIBRARIES} std=c++17)
+        endif()
+    elseif(CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
+        if(CMAKE_CXX_COMPILER_VERSION VERSION_LESSER "11.0.0")
+            set(LIBRARIES ${LIBRARIES} stdc++fs)
+        else()
+            set(LIBRARIES ${LIBRARIES} std=c++17)
+        endif()
+    elseif(CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang")
+        if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9.0.0")
+            set(LIBRARIES ${LIBRARIES} stdc++fs)
+        else()
+            set(LIBRARIES ${LIBRARIES} std=c++17)
+        endif()
+    endif()
 endif()
 
-source_group ("glsl" REGULAR_EXPRESSION "*/*.glsl")
+source_group ("glsl" REGULAR_EXPRESSION ".*/*.glsl")
 source_group ("third-party" REGULAR_EXPRESSION "third-party/*.*")
 
 file(GLOB APP_DIRECTORIES "apps/*")
