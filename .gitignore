@@ -1,1 +1,5 @@
 *.imgui.ini
+
+# JetBrain's Clion caches and temps files
+.idea/
+cmake-build-debug/
