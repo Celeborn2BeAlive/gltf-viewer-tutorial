@@ -4,6 +4,7 @@
 #include "utils/cameras.hpp"
 #include "utils/filesystem.hpp"
 #include "utils/shaders.hpp"
+#include <tiny_gltf.h>
 
 class ViewerApplication
 {
@@ -14,6 +15,7 @@ public:
       const fs::path &output);
 
   int run();
+  bool loadGltfFile(tinygltf::Model &model);
 
 private:
   // A range of indices in a vector containing Vertex Array Objects
