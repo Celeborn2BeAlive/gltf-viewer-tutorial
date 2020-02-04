@@ -74,5 +74,10 @@
     "forward_list": "cpp",
     "string_view": "cpp",
     "valarray": "cpp"
+  },
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#f23016",
+    "titleBar.inactiveBackground": "#ac2912",
+    "titleBar.activeForeground": "#ffffff",
   }
 }
