@@ -107,4 +107,70 @@ bool FirstPersonCameraController::update(float elapsedTime)
   return true;
 }
 
-bool TrackballCameraController::update(float elapsedTime) { return false; }
+bool TrackballCameraController::update(float elapsedTime)
+{
+  if (glfwGetMouseButton(m_pWindow, GLFW_MOUSE_BUTTON_MIDDLE) &&
+      !m_MiddleButtonPressed) {
+    m_MiddleButtonPressed = true;
+    glfwGetCursorPos(
+        m_pWindow, &m_LastCursorPosition.x, &m_LastCursorPosition.y);
+  } else if (!glfwGetMouseButton(m_pWindow, GLFW_MOUSE_BUTTON_MIDDLE) &&
+             m_MiddleButtonPressed) {
+    m_MiddleButtonPressed = false;
+  }
+
+  const auto cursorDelta = ([&]() {
+    if (m_MiddleButtonPressed) {
+      dvec2 cursorPosition;
+      glfwGetCursorPos(m_pWindow, &cursorPosition.x, &cursorPosition.y);
+      const auto delta = cursorPosition - m_LastCursorPosition;
+      m_LastCursorPosition = cursorPosition;
+      return delta;
+    }
+    return dvec2(0);
+  })();
+
+  if (glfwGetKey(m_pWindow, GLFW_KEY_LEFT_SHIFT)) {
+    // Pan
+    const auto truckLeft = 0.01f * float(cursorDelta.x);
+    const auto pedestalUp = 0.01f * float(cursorDelta.y);
+    const auto hasMoved = truckLeft || pedestalUp;
+    if (!hasMoved) {
+      return false;
+    }
+    m_camera.moveLocal(truckLeft, pedestalUp, 0.f);
+    return true;
+  }
+
+  if (glfwGetKey(m_pWindow, GLFW_KEY_LEFT_CONTROL)) {
+    // Zoom
+    const auto mouseOffset = -0.01f * float(cursorDelta.y);
+    m_camera.zoom(mouseOffset);
+    return mouseOffset != 0;
+  }
+
+  const auto longitudeAngle = -0.01f * float(cursorDelta.y);
+  const auto latitudeAngle = -0.01f * float(cursorDelta.x);
+  const auto hasMoved = longitudeAngle || latitudeAngle;
+  if (!hasMoved) {
+    return false;
+  }
+
+  const auto depthAxis = m_camera.eye() - m_camera.center();
+  const auto rotationMatrix =
+      glm::rotate(glm::mat4(1), latitudeAngle, m_worldUpAxis);
+  const auto rotatedDepthAxis =
+      glm::vec3(rotationMatrix * glm::vec4(depthAxis, 0));
+  const auto newEye = m_camera.center() + rotatedDepthAxis;
+  const auto newDepthAxis = newEye - m_camera.center();
+  const auto horizontalAxis = glm::cross(m_worldUpAxis, newDepthAxis);
+  const auto newRotationMatrix =
+      glm::rotate(glm::mat4(1), longitudeAngle, horizontalAxis);
+  const auto newRotatedDepthAxis =
+      glm::vec3(newRotationMatrix * glm::vec4(newDepthAxis, 0));
+  const auto newNewEye = m_camera.center() + newRotatedDepthAxis;
+
+  m_camera = Camera(newNewEye, m_camera.center(), m_worldUpAxis);
+
+  return true;
+}
