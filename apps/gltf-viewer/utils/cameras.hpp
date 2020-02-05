@@ -195,7 +195,6 @@ private:
   Camera m_camera;
 };
 
-// todo Blender like camera
 class TrackballCameraController
 {
 public:
