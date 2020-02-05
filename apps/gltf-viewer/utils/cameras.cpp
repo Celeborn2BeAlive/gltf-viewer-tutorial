@@ -144,9 +144,23 @@ bool TrackballCameraController::update(float elapsedTime)
 
   if (glfwGetKey(m_pWindow, GLFW_KEY_LEFT_CONTROL)) {
     // Zoom
-    const auto mouseOffset = -0.01f * float(cursorDelta.y);
-    m_camera.zoom(mouseOffset);
-    return mouseOffset != 0;
+    auto mouseOffset = 0.01f * float(cursorDelta.x);
+    if (mouseOffset == 0.f) {
+      return false;
+    }
+
+    const auto viewVector = m_camera.center() - m_camera.eye();
+    const auto l = glm::length(viewVector);
+    const auto front = viewVector / l;
+    if (mouseOffset > 0.f) {
+      mouseOffset = glm::min(mouseOffset, l - 1e-4f);
+    }
+    const auto translationVector = mouseOffset * front;
+    const auto newEye = m_camera.eye() + translationVector;
+
+    m_camera = Camera(newEye, m_camera.center(), m_worldUpAxis);
+
+    return true;
   }
 
   const auto longitudeAngle = -0.01f * float(cursorDelta.y);

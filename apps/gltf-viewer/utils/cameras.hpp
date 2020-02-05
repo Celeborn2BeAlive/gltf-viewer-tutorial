@@ -118,19 +118,6 @@ public:
     m_up = glm::vec3(rotationMatrix * glm::vec4(m_up, 0));
   }
 
-  // Move toward or backward from the center
-  void zoom(float offset)
-  {
-    const auto viewVector = m_center - m_eye;
-    const auto l = glm::length(viewVector);
-    const auto front = viewVector / l;
-    if (offset > 0.f) {
-      offset = glm::min(offset, l - 1e-4f);
-    }
-    const auto translationVector = offset * front;
-    m_eye += translationVector;
-  }
-
   const glm::vec3 eye() const { return m_eye; }
 
   const glm::vec3 center() const { return m_center; }
