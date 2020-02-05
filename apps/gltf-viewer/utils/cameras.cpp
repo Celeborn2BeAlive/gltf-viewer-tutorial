@@ -179,7 +179,26 @@ bool TrackballCameraController::update(float elapsedTime)
     return false;
   }
 
-  // todo Implement rotate
+  // We need to rotate eye around center, for that we rotate the vector [center,
+  // eye] (= depthAxis) in order to compute a new eye position
+  const auto depthAxis = m_camera.eye() - m_camera.center();
+
+  // Start with the vertical rotation, which is done around the horizontal axis
+  // of the camera and can be obtained with left()
+  const auto horizontalAxis = m_camera.left();
+  const auto longitudeRotationMatrix =
+      rotate(mat4(1), longitudeAngle, horizontalAxis);
+  auto rotatedDepthAxis = vec3(longitudeRotationMatrix * vec4(depthAxis, 0));
+
+  // Then the horizontal rotation, which is done around the world up axis.
+  const auto latitudeRotationMatrix =
+      rotate(mat4(1), latitudeAngle, m_worldUpAxis);
+  const auto finalDepthAxis =
+      vec3(latitudeRotationMatrix * vec4(rotatedDepthAxis, 0));
+
+  // Update camera with new eye position
+  const auto newEye = m_camera.center() + finalDepthAxis;
+  m_camera = Camera(newEye, m_camera.center(), m_worldUpAxis);
 
   return true;
 }
