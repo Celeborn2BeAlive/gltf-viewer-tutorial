@@ -139,7 +139,7 @@ bool TrackballCameraController::update(float elapsedTime)
       return false;
     }
 
-    // todo Implement pan
+    m_camera.moveLocal(truckLeft, pedestalUp, 0.f);
 
     return true;
   }
