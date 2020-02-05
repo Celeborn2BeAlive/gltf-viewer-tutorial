@@ -16,15 +16,13 @@
 #include <tiny_gltf.h>
 
 void keyCallback(
-    GLFWwindow *window, int key, int scancode, int action, int mods)
-{
+    GLFWwindow *window, int key, int scancode, int action, int mods){
   if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
     glfwSetWindowShouldClose(window, 1);
   }
 }
 
-int ViewerApplication::run()
-{
+int ViewerApplication::run(){
   // Loader shaders
   const auto glslProgram =
       compileProgram({m_ShadersRootPath / m_AppName / m_vertexShader,
@@ -45,7 +43,8 @@ int ViewerApplication::run()
     computeSceneBounds(model, bboxMin, bboxMax);
 
   // Build projection matrix
-  //auto maxDistance = 500.f; // TODO use scene bounds instead to compute this
+  //auto maxDistance = 500.f;
+  // "" use scene bounds instead to compute this
   //maxDistance = maxDistance > 0.f ? maxDistance : 100.f;
   const auto diag = bboxMax - bboxMin;
   auto maxDistance = glm::length(diag);
@@ -53,14 +52,14 @@ int ViewerApplication::run()
       glm::perspective(70.f, float(m_nWindowWidth) / m_nWindowHeight,
           0.001f * maxDistance, 1.5f * maxDistance);
 
-  // TODO Implement a new CameraController model and use it instead. Propose the
+  // "" Implement a new CameraController model and use it instead. Propose the
   // choice from the GUI
   FirstPersonCameraController cameraController{
       m_GLFWHandle.window(), 0.5f * maxDistance};
   if (m_hasUserCamera) {
     cameraController.setCamera(m_userCamera);
   } else {
-    // TODO Use scene bounds to compute a better default camera
+    // "" Use scene bounds to compute a better default camera
     //cameraController.setCamera(
         //Camera{glm::vec3(0, 0, 0), glm::vec3(0, 0, -1), glm::vec3(0, 1, 0)});
 
@@ -73,16 +72,15 @@ int ViewerApplication::run()
   }
 /*
   tinygltf::Model model;
-  // TODO Loading the glTF file
+  // "" Loading the glTF file
   if(!loadGltfFile(model)){
       return -1;
   }*/
 
-  // TODO Creation of Buffer Objects
+  // "" Creation of Buffer Objects
   const auto bufferObjects = creatBufferObjects(model);
 
-
-  // TODO Creation of Vertex Array Objects
+  // "" Creation of Vertex Array Objects
     std::vector<VaoRange> meshToVertexArrays;
     const auto vertexArrayObjects = createVertexArrayObjects(model, bufferObjects, meshToVertexArrays);
 
@@ -101,7 +99,7 @@ int ViewerApplication::run()
     // We use a std::function because a simple lambda cannot be recursive
     const std::function<void(int, const glm::mat4 &)> drawNode =
         [&](int nodeIdx, const glm::mat4 &parentMatrix) {
-          // TODO The drawNode function
+          // "" The drawNode function
             const auto &node = model.nodes[nodeIdx];
             const glm::mat4 modelMatrix = getLocalToWorldMatrix(node, parentMatrix);
 
@@ -125,8 +123,7 @@ int ViewerApplication::run()
                         const auto &accessor = model.accessors[primitive.indices];
                         const auto &bufferView = model.bufferViews[accessor.bufferView];
                         const auto byteOffset = accessor.byteOffset + bufferView.byteOffset;
-                        glDrawElements(primitive.mode, GLsizei(accessor.count),
-                                accessor.componentType, (const GLvoid *)byteOffset);
+                        glDrawElements(primitive.mode, GLsizei(accessor.count), accessor.componentType, (const GLvoid *)byteOffset);
                     } else {
                         const auto accessorIdx = (*begin(primitive.attributes)).second;
                         const auto &accessor = model.accessors[accessorIdx];
@@ -139,10 +136,8 @@ int ViewerApplication::run()
             }
 
         };
-
-    // Draw the scene referenced by gltf file
     if (model.defaultScene >= 0) {
-      // TODO Draw all nodes
+      // "" Draw all nodes
       for(auto node : model.scenes[model.defaultScene].nodes){
           drawNode(node, glm::mat4(1));
       }
@@ -220,26 +215,24 @@ int ViewerApplication::run()
     m_GLFWHandle.swapBuffers(); // Swap front and back buffers
   }
 
-  // TODO clean up allocated GL data
+  // "" clean up allocated GL data
 
   return 0;
 }
 bool ViewerApplication::loadGltfFile(tinygltf::Model & model){
     std::clog << "Loading file " << m_gltfFilePath << std::endl;
     tinygltf::TinyGLTF loader;
-    std::string err;
+    std::string error;
     std::string warn;
 
-    bool ret = loader.LoadASCIIFromFile(&model, &err, &warn, m_gltfFilePath.string());
+    bool ret = loader.LoadASCIIFromFile(&model, &error, &warn, m_gltfFilePath.string());
 
     if (!warn.empty()) {
         std::cerr << warn << std::endl;
     }
-
-    if (!err.empty()) {
-        std::cerr << err << std::endl;
+    if (!error.empty()) {
+        std::cerr << error << std::endl;
     }
-
     if (!ret) {
         std::cerr << "Failed to parse glTF file" << std::endl;
         return false;
