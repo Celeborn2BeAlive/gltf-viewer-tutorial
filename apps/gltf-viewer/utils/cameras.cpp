@@ -151,7 +151,21 @@ bool TrackballCameraController::update(float elapsedTime)
       return false;
     }
 
-    // todo Implement zoom
+    // We need to move along the view vector of the camera
+    const auto viewVector = m_camera.center() - m_camera.eye();
+    const auto l = glm::length(viewVector);
+    if (mouseOffset > 0.f) {
+      // We don't want to move more that the length of the view vector (cannot
+      // go beyond target)
+      mouseOffset = glm::min(mouseOffset, l - 1e-4f);
+    }
+    // Normalize view vector for the translation
+    const auto front = viewVector / l;
+    const auto translationVector = mouseOffset * front;
+
+    // Update camera with new eye position
+    const auto newEye = m_camera.eye() + translationVector;
+    m_camera = Camera(newEye, m_camera.center(), m_worldUpAxis);
 
     return true;
   }
