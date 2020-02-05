@@ -51,18 +51,17 @@ int ViewerApplication::run()
       glm::perspective(70.f, float(m_nWindowWidth) / m_nWindowHeight,
           0.001f * maxDistance, 1.5f * maxDistance);
 
-  // TODO Implement a new CameraController model and use it instead. Propose the
-  // choice from the GUI
-  TrackballCameraController cameraController{
-      m_GLFWHandle.window(), 0.5f * maxDistance};
+  std::unique_ptr<CameraController> cameraController =
+      std::make_unique<TrackballCameraController>(
+          m_GLFWHandle.window(), 0.5f * maxDistance);
   if (m_hasUserCamera) {
-    cameraController.setCamera(m_userCamera);
+    cameraController->setCamera(m_userCamera);
   } else {
     const auto center = 0.5f * (bboxMax + bboxMin);
     const auto up = glm::vec3(0, 1, 0);
     const auto eye =
         diag.z > 0 ? center + diag : center + 2.f * glm::cross(diag, up);
-    cameraController.setCamera(Camera{eye, center, up});
+    cameraController->setCamera(Camera{eye, center, up});
   }
 
   const auto bufferObjects = createBufferObjects(model);
@@ -152,7 +151,7 @@ int ViewerApplication::run()
         m_nWindowWidth * m_nWindowHeight * numComponents);
     renderToImage(
         m_nWindowWidth, m_nWindowHeight, numComponents, pixels.data(), [&]() {
-          const auto camera = cameraController.getCamera();
+          const auto camera = cameraController->getCamera();
           drawScene(camera);
         });
     // OpenGL has not the same convention for image axis than most image
@@ -173,7 +172,7 @@ int ViewerApplication::run()
        ++iterationCount) {
     const auto seconds = glfwGetTime();
 
-    const auto camera = cameraController.getCamera();
+    const auto camera = cameraController->getCamera();
     drawScene(camera);
 
     // GUI code:
@@ -217,7 +216,7 @@ int ViewerApplication::run()
     auto guiHasFocus =
         ImGui::GetIO().WantCaptureMouse || ImGui::GetIO().WantCaptureKeyboard;
     if (!guiHasFocus) {
-      cameraController.update(float(ellapsedTime));
+      cameraController->update(float(ellapsedTime));
     }
 
     m_GLFWHandle.swapBuffers(); // Swap front and back buffers
