@@ -1,2 +1,3 @@
 *.imgui.ini
 .vscode/
+apps/gltf-viewer/.vs
