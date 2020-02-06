@@ -23,17 +23,20 @@ bool ViewerApplication::loadGltfFile(tinygltf::Model & model){
   //bool ret = loader.LoadBinaryFromFile(&model, &err, &warn, argv[1]); // for binary glTF(.glb)
 
   if (!warn.empty()) {
-    printf("Warn: %s\n", warn.c_str());
+    std::cerr << "Warn: " << warn << std::endl;
+    return false;
   }
 
   if (!err.empty()) {
-    printf("Err: %s\n", err.c_str());
+    std::cerr << "Err: " <<  err << std::endl;
+    return false;
   }
 
   if (!ret) {
-    printf("Failed to parse glTF\n");
-    return -1;
+    std::cerr << "Failed to parse glTF" << std::endl;
+    return false;
   }
+  return true;
 }
 
 std::vector<GLuint> ViewerApplication::createBufferObjects( const tinygltf::Model &model) {
@@ -91,7 +94,9 @@ int ViewerApplication::run()
 
   tinygltf::Model model;
   // TODO Loading the glTF file
-  loadGltfFile(model);
+  if(!loadGltfFile(model)) {
+    return EXIT_FAILURE;
+  };
 
   // TODO Creation of Buffer Objects
   std::vector<GLuint> bufferObjects = createBufferObjects(model);
