@@ -72,6 +72,7 @@ int ViewerApplication::run()
   // Init light parameters
   glm::vec3 lightDirection(1, 1, 1);
   glm::vec3 lightIntensity(1, 1, 1);
+  bool lightFromCamera = false;
 
   const auto bufferObjects = createBufferObjects(model);
 
@@ -91,10 +92,14 @@ int ViewerApplication::run()
     const auto viewMatrix = camera.getViewMatrix();
 
     if (uLightDirectionLocation >= 0) {
-      const auto lightDirectionInViewSpace =
-          glm::normalize(glm::vec3(viewMatrix * glm::vec4(lightDirection, 0.)));
-      glUniform3f(uLightDirectionLocation, lightDirectionInViewSpace[0],
-          lightDirectionInViewSpace[1], lightDirectionInViewSpace[2]);
+      if (lightFromCamera) {
+        glUniform3f(uLightDirectionLocation, 0, 0, 1);
+      } else {
+        const auto lightDirectionInViewSpace = glm::normalize(
+            glm::vec3(viewMatrix * glm::vec4(lightDirection, 0.)));
+        glUniform3f(uLightDirectionLocation, lightDirectionInViewSpace[0],
+            lightDirectionInViewSpace[1], lightDirectionInViewSpace[2]);
+      }
     }
 
     if (uLightIntensity >= 0) {
@@ -263,6 +268,8 @@ int ViewerApplication::run()
             ImGui::InputFloat("intensity", &lightIntensityFactor)) {
           lightIntensity = lightColor * lightIntensityFactor;
         }
+
+        ImGui::Checkbox("light from camera", &lightFromCamera);
       }
       ImGui::End();
     }
