@@ -14,10 +14,6 @@ public:
       const std::string &vertexShader, const std::string &fragmentShader,
       const fs::path &output);
 
-  bool loadGltfFile(tinygltf::Model & model);
-
-  std::vector<GLuint> createBufferObjects( const tinygltf::Model &model);
-  
   int run();
 
 private:
@@ -61,4 +57,10 @@ private:
     the creation of a GLFW windows and thus a GL context which must exists
     before most of OpenGL function calls.
   */
+
+  bool loadGltfFile(tinygltf::Model & model);
+
+  std::vector<GLuint> createBufferObjects( const tinygltf::Model &model);
+
+  std::vector<GLuint> createVertexArrayObjects( const tinygltf::Model &model, const std::vector<GLuint> &bufferObjects, std::vector<VaoRange> & meshIndexToVaoRange);
 };
