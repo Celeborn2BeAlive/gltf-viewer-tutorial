@@ -37,6 +37,11 @@ int ViewerApplication::run()
   const auto normalMatrixLocation =
       glGetUniformLocation(glslProgram.glId(), "uNormalMatrix");
 
+  const auto uLightDirectionLocation =
+      glGetUniformLocation(glslProgram.glId(), "uLightDirection");
+  const auto uLightIntensity =
+      glGetUniformLocation(glslProgram.glId(), "uLightIntensity");
+
   tinygltf::Model model;
   if (!loadGltfFile(model)) {
     return -1;
@@ -64,6 +69,10 @@ int ViewerApplication::run()
     cameraController->setCamera(Camera{eye, center, up});
   }
 
+  // Init light parameters
+  glm::vec3 lightDirection(1, 1, 1);
+  glm::vec3 lightIntensity(1, 1, 1);
+
   const auto bufferObjects = createBufferObjects(model);
 
   std::vector<VaoRange> meshToVertexArrays;
@@ -80,6 +89,18 @@ int ViewerApplication::run()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     const auto viewMatrix = camera.getViewMatrix();
+
+    if (uLightDirectionLocation >= 0) {
+      const auto lightDirectionInViewSpace =
+          glm::normalize(glm::vec3(viewMatrix * glm::vec4(lightDirection, 0.)));
+      glUniform3f(uLightDirectionLocation, lightDirectionInViewSpace[0],
+          lightDirectionInViewSpace[1], lightDirectionInViewSpace[2]);
+    }
+
+    if (uLightIntensity >= 0) {
+      glUniform3f(uLightIntensity, lightIntensity[0], lightIntensity[1],
+          lightIntensity[2]);
+    }
 
     // The recursive function that should draw a node
     // We use a std::function because a simple lambda cannot be recursive
