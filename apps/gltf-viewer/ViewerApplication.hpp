@@ -16,6 +16,8 @@ public:
 
   bool loadGltfFile(tinygltf::Model & model);
 
+  std::vector<GLuint> createBufferObjects( const tinygltf::Model &model);
+
   int run();
 
 private:
