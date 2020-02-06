@@ -42,7 +42,7 @@ private:
 
   fs::path m_gltfFilePath;
   std::string m_vertexShader = "forward.vs.glsl";
-  std::string m_fragmentShader = "normals.fs.glsl";
+  std::string m_fragmentShader = "diffuse_directional_light.fs.glsl";
 
   bool m_hasUserCamera = false;
   Camera m_userCamera;
