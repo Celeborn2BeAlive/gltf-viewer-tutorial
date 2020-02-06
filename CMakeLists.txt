@@ -72,11 +72,10 @@ set(
     glfw
 )
 
+set(CXXFLAGS ${CXXFLAGS} std=c++14)
 if (GLMLV_USE_BOOST_FILESYSTEM)
     set(LIBRARIES ${LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
-else()
-    set(CXXFLAGS ${CXXFLAGS} std=c++14)
-    
+else()    
     if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         set(CXXFLAGS ${CXXFLAGS} std=c++17)
         set(LIBRARIES ${LIBRARIES} stdc++fs)
@@ -106,7 +105,7 @@ foreach(DIR ${APP_DIRECTORIES})
         SRC_FILES
         apps/${APP}/*.cpp apps/${APP}/*.hpp apps/${APP}/*.glsl apps/${APP}/assets/*
     )
-
+    
     add_executable(
         ${APP}
         ${SRC_FILES}
@@ -154,8 +153,13 @@ foreach(DIR ${APP_DIRECTORIES})
         IMGUI_IMPL_OPENGL_LOADER_GLAD
         GLM_ENABLE_EXPERIMENTAL
     )
-
-    set_property(TARGET ${APP} PROPERTY CXX_STANDARD 17)
+    
+    if(${CMAKE_VERSION} VERSION_LESS "3.8.0")
+        set_property(TARGET ${APP} PROPERTY CXX_STANDARD 14)
+    else()
+        set_property(TARGET ${APP} PROPERTY CXX_STANDARD 17)
+    endif()
+        
 
     target_link_libraries(
         ${APP}
