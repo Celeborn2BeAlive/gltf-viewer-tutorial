@@ -13,6 +13,10 @@
 #include <stb_image_write.h>
 #include <tiny_gltf.h>
 
+const GLuint VERTEX_ATTRIB_POSITION_IDX = 0;
+const GLuint VERTEX_ATTRIB_NORMAL_IDX = 1;
+const GLuint VERTEX_ATTRIB_TEXCOORD0_IDX = 2;
+
 bool ViewerApplication::loadGltfFile(tinygltf::Model & model){
 
   tinygltf::TinyGLTF loader;
@@ -49,6 +53,85 @@ std::vector<GLuint> ViewerApplication::createBufferObjects( const tinygltf::Mode
     }
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     return bufferObjects;
+}
+
+std::vector<GLuint> ViewerApplication::createVertexArrayObjects( const tinygltf::Model &model, 
+  const std::vector<GLuint> &bufferObjects, 
+  std::vector<VaoRange> & meshIndexToVaoRange) {
+    std::vector<GLuint> vertexArrayObjects;
+    
+    for(int meshIdx = 0; meshIdx < model.meshes.size(); meshIdx++ ) {
+        const int vaoOffset = vertexArrayObjects.size();
+        const int primitiveSizeRange = model.meshes[meshIdx].primitives.size();
+        vertexArrayObjects.resize(vaoOffset + primitiveSizeRange);
+        meshIndexToVaoRange.push_back(VaoRange{vaoOffset, primitiveSizeRange});
+        glGenVertexArrays(primitiveSizeRange, &vertexArrayObjects[meshIdx]);
+
+        for(int primitiveIdx = 0; primitiveIdx < primitiveSizeRange; primitiveIdx++) {
+          glBindVertexArray(vertexArrayObjects[vaoOffset + primitiveIdx]);
+          {
+            const auto iterator = model.meshes[meshIdx].primitives[primitiveIdx].attributes.find("POSITION");
+            if (iterator != end(model.meshes[meshIdx].primitives[primitiveIdx].attributes)) {
+              const auto accessorIdx = (*iterator).second;
+              const auto &accessor = model.accessors[accessorIdx];
+              const auto &bufferView = model.bufferViews[accessor.bufferView]; 
+              const auto bufferIdx = bufferView.buffer;
+
+              const auto bufferObject = bufferObjects[bufferIdx];
+
+              glEnableVertexAttribArray(VERTEX_ATTRIB_POSITION_IDX);
+              glBindBuffer(GL_ARRAY_BUFFER, bufferObject);
+
+              const auto byteOffset = accessor.byteOffset + bufferView.byteOffset;
+              glVertexAttribPointer(VERTEX_ATTRIB_POSITION_IDX, accessor.type, accessor.componentType, GL_FALSE, bufferView.byteStride, (void *)byteOffset);
+            }
+          }
+          {
+            const auto iterator = model.meshes[meshIdx].primitives[primitiveIdx].attributes.find("NORMAL");
+            if (iterator != end(model.meshes[meshIdx].primitives[primitiveIdx].attributes)) {
+              const auto accessorIdx = (*iterator).second;
+              const auto &accessor = model.accessors[accessorIdx];
+              const auto &bufferView = model.bufferViews[accessor.bufferView];
+              const auto bufferIdx = bufferView.buffer;
+
+              const auto bufferObject = bufferObjects[bufferIdx];
+
+              glEnableVertexAttribArray(VERTEX_ATTRIB_NORMAL_IDX);
+              glBindBuffer(GL_ARRAY_BUFFER, bufferObject);
+
+              const auto byteOffset = accessor.byteOffset + bufferView.byteOffset;
+              glVertexAttribPointer(VERTEX_ATTRIB_NORMAL_IDX, accessor.type, accessor.componentType, GL_FALSE, bufferView.byteStride, (void *)byteOffset);
+            }
+          }
+          {
+            const auto iterator = model.meshes[meshIdx].primitives[primitiveIdx].attributes.find("TEXCOORD_0");
+            if (iterator != end(model.meshes[meshIdx].primitives[primitiveIdx].attributes)) {
+              const auto accessorIdx = (*iterator).second;
+              const auto &accessor = model.accessors[accessorIdx];
+              const auto &bufferView = model.bufferViews[accessor.bufferView];
+              const auto bufferIdx = bufferView.buffer;
+
+              const auto bufferObject = bufferObjects[bufferIdx];
+
+              glEnableVertexAttribArray(VERTEX_ATTRIB_TEXCOORD0_IDX);
+              glBindBuffer(GL_ARRAY_BUFFER, bufferObject);
+
+              const auto byteOffset = accessor.byteOffset + bufferView.byteOffset;
+              glVertexAttribPointer(VERTEX_ATTRIB_TEXCOORD0_IDX, accessor.type, accessor.componentType, GL_FALSE, bufferView.byteStride, (void *)byteOffset);
+            }
+          }
+          if(model.meshes[meshIdx].primitives[primitiveIdx].indices >= 0) {
+            const auto &accessor = model.accessors[model.meshes[meshIdx].primitives[primitiveIdx].indices];
+              const auto &bufferView = model.bufferViews[accessor.bufferView]; 
+              const auto bufferIdx = bufferView.buffer;
+
+              const auto bufferObject = bufferObjects[bufferIdx];
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferObject);
+          }
+        }
+    }
+    glBindVertexArray(0);
+    return vertexArrayObjects;
 }
 
 void keyCallback(
@@ -102,6 +185,8 @@ int ViewerApplication::run()
   std::vector<GLuint> bufferObjects = createBufferObjects(model);
 
   // TODO Creation of Vertex Array Objects
+  std::vector<VaoRange> meshIndexToVaoRange; 
+  std::vector<GLuint> vertexArrayObjects = createVertexArrayObjects(model, bufferObjects, meshIndexToVaoRange);
 
   // Setup OpenGL state for rendering
   glEnable(GL_DEPTH_TEST);
