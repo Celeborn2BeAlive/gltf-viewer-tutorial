@@ -240,12 +240,12 @@ public:
 
   // Update the view matrix based on input events and elapsed time
   // Return true if the view matrix has been modified
-  bool update(float elapsedTime) override;
+  bool update(float elapsedTime);
 
   // Get the view matrix
-  const Camera &getCamera() const override { return m_camera; }
+  const Camera &getCamera() const { return m_camera; }
 
-  void setCamera(const Camera &camera) override { m_camera = camera; }
+  void setCamera(const Camera &camera) { m_camera = camera; }
 
 private:
   GLFWwindow *m_pWindow = nullptr;

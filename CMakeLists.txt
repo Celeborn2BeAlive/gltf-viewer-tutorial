@@ -1,13 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
+
 cmake_policy(SET CMP0048 NEW)
 
 project(gltf-viewer-tutorial VERSION 0.0.1)
-
-if(CMAKE_COMPILER_IS_GNUCXX)
-    add_definitions(
-        -std=c++14
-    )
-endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -26,6 +21,11 @@ option(GLFW_BUILD_TESTS OFF)
 option(GLFW_BUILD_EXAMPLES OFF)
 add_subdirectory(third-party/${GLFW_DIR})
 
+if(${CMAKE_VERSION} VERSION_LESS "3.10.0")
+    set(OpenGL_GL_PREFERENCE LEGACY)
+else()
+    set(OpenGL_GL_PREFERENCE GLVND)
+endif()
 find_package(OpenGL REQUIRED)
 
 if(GLMLV_USE_BOOST_FILESYSTEM)
@@ -72,15 +72,28 @@ set(
     glfw
 )
 
-if(CMAKE_COMPILER_IS_GNUCXX AND NOT GLMLV_USE_BOOST_FILESYSTEM)
-    set(LIBRARIES ${LIBRARIES} stdc++fs)
-endif()
-
+set(CXXFLAGS ${CXXFLAGS} std=c++14)
 if (GLMLV_USE_BOOST_FILESYSTEM)
     set(LIBRARIES ${LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
+else()    
+    if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+        set(CXXFLAGS ${CXXFLAGS} std=c++17)
+        set(LIBRARIES ${LIBRARIES} stdc++fs)
+        if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "8.0.0")
+            set(USE_STD_FILESYSTEM 1)
+        endif()
+    
+    elseif(CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang")
+        if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9.0.0")
+            set(LIBRARIES ${LIBRARIES} stdc++fs)
+        else()
+            set(CXXFLAGS ${CXXFLAGS} std=c++17)
+            set(USE_STD_FILESYSTEM 1)
+        endif()
+    endif()
 endif()
 
-source_group ("glsl" REGULAR_EXPRESSION "*/*.glsl")
+source_group ("glsl" REGULAR_EXPRESSION ".*/*.glsl")
 source_group ("third-party" REGULAR_EXPRESSION "third-party/*.*")
 
 file(GLOB APP_DIRECTORIES "apps/*")
@@ -92,13 +105,20 @@ foreach(DIR ${APP_DIRECTORIES})
         SRC_FILES
         apps/${APP}/*.cpp apps/${APP}/*.hpp apps/${APP}/*.glsl apps/${APP}/assets/*
     )
-
+    
     add_executable(
         ${APP}
         ${SRC_FILES}
         ${THIRD_PARTY_SRC_FILES}
     )
-
+    
+    if (USE_STD_FILESYSTEM)
+        target_compile_definitions(
+            ${APP}
+            PUBLIC
+            USE_STD_FILESYSTEM
+        )
+    endif()
     if(GLMLV_USE_BOOST_FILESYSTEM)
         target_include_directories (
             ${APP}
@@ -133,8 +153,13 @@ foreach(DIR ${APP_DIRECTORIES})
         IMGUI_IMPL_OPENGL_LOADER_GLAD
         GLM_ENABLE_EXPERIMENTAL
     )
-
-    set_property(TARGET ${APP} PROPERTY CXX_STANDARD 17)
+    
+    if(${CMAKE_VERSION} VERSION_LESS "3.8.0")
+        set_property(TARGET ${APP} PROPERTY CXX_STANDARD 14)
+    else()
+        set_property(TARGET ${APP} PROPERTY CXX_STANDARD 17)
+    endif()
+        
 
     target_link_libraries(
         ${APP}
