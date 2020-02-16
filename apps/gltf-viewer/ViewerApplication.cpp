@@ -9,6 +9,7 @@
 #include <glm/gtx/io.hpp>
 
 #include "utils/cameras.hpp"
+#include "utils/gltf.hpp"
 
 #include <stb_image_write.h>
 #include <tiny_gltf.h>
@@ -201,12 +202,44 @@ int ViewerApplication::run()
     // We use a std::function because a simple lambda cannot be recursive
     const std::function<void(int, const glm::mat4 &)> drawNode =
         [&](int nodeIdx, const glm::mat4 &parentMatrix) {
-          // TODO The drawNode function
+          tinygltf::Node node = model.nodes[nodeIdx];
+          glm::mat4 modelMatrix = getLocalToWorldMatrix(node, parentMatrix);
+          if(node.mesh >= 0){
+            const glm::mat4 modelViewMatrix = modelMatrix * viewMatrix;
+            const glm::mat4 modelViewProjectionMatrix = projMatrix * modelViewMatrix;
+            const glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
+
+            glUniformMatrix4fv(modelViewMatrixLocation, 1, GL_FALSE, value_ptr(modelViewMatrix));
+            glUniformMatrix4fv(modelViewProjMatrixLocation, 1, GL_FALSE, value_ptr(modelViewProjectionMatrix));
+            glUniformMatrix4fv(normalMatrixLocation, 1, GL_FALSE, value_ptr(normalMatrix));
+
+            const tinygltf::Mesh &mesh = model.meshes[node.mesh];
+            const auto &vaoRangeMesh = meshIndexToVaoRange[node.mesh];
+            for(size_t primIdx = 0; primIdx < mesh.primitives.size(); ++primIdx) {
+              const auto vaoPrimitive = vertexArrayObjects[vaoRangeMesh.begin + primIdx];
+              const auto &currentPrimitive = mesh.primitives[primIdx];
+              glBindVertexArray(vaoPrimitive);
+              if(currentPrimitive.indices >= 0) {
+                const auto &accessor = model.accessors[currentPrimitive.indices];
+                const auto &bufferView = model.bufferViews[accessor.bufferView];
+                const auto byteOffset = accessor.byteOffset + bufferView.byteOffset;
+                glDrawElements(currentPrimitive.mode, GLsizei(accessor.count),
+                    accessor.componentType, (const GLvoid *)byteOffset);
+              } else {
+                const auto accessorIdx = (*begin(currentPrimitive.attributes)).second;
+                const auto &accessor = model.accessors[accessorIdx];
+                glDrawArrays(currentPrimitive.mode, 0, GLsizei(accessor.count));
+              }
+            }
+          }
+          for(const auto childNode : node.children) {
+            drawNode(childNode, modelMatrix);
+          }
         };
 
     // Draw the scene referenced by gltf file
     if (model.defaultScene >= 0) {
-      for(int nodeIdx = 0; nodeIdx < model.scenes[model.defaultScene].nodes.size(); nodeIdx++) {
+      for(int nodeIdx : model.scenes[model.defaultScene].nodes) {
         drawNode(model.scenes[model.defaultScene].nodes[nodeIdx], glm::mat4(1));
       }
     }
