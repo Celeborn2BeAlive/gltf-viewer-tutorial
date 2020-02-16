@@ -13,10 +13,6 @@
 #include <stb_image_write.h>
 #include <tiny_gltf.h>
 
-const GLuint VERTEX_ATTRIB_POSITION_IDX = 0;
-const GLuint VERTEX_ATTRIB_NORMAL_IDX = 1;
-const GLuint VERTEX_ATTRIB_TEXCOORD0_IDX = 2;
-
 bool ViewerApplication::loadGltfFile(tinygltf::Model & model){
 
   tinygltf::TinyGLTF loader;
@@ -57,8 +53,12 @@ std::vector<GLuint> ViewerApplication::createBufferObjects( const tinygltf::Mode
 
 std::vector<GLuint> ViewerApplication::createVertexArrayObjects( const tinygltf::Model &model, 
   const std::vector<GLuint> &bufferObjects, 
-  std::vector<VaoRange> & meshIndexToVaoRange) {
+  std::vector<VaoRange> &meshIndexToVaoRange) {
     std::vector<GLuint> vertexArrayObjects;
+
+    const GLuint VERTEX_ATTRIB_POSITION_IDX = 0;
+    const GLuint VERTEX_ATTRIB_NORMAL_IDX = 1;
+    const GLuint VERTEX_ATTRIB_TEXCOORD0_IDX = 2;
     
     for(int meshIdx = 0; meshIdx < model.meshes.size(); meshIdx++ ) {
         const int vaoOffset = vertexArrayObjects.size();
@@ -176,17 +176,15 @@ int ViewerApplication::run()
   }
 
   tinygltf::Model model;
-  // TODO Loading the glTF file
   if(!loadGltfFile(model)) {
     return EXIT_FAILURE;
   };
 
-  // TODO Creation of Buffer Objects
   std::vector<GLuint> bufferObjects = createBufferObjects(model);
 
-  // TODO Creation of Vertex Array Objects
   std::vector<VaoRange> meshIndexToVaoRange; 
   std::vector<GLuint> vertexArrayObjects = createVertexArrayObjects(model, bufferObjects, meshIndexToVaoRange);
+  //std::cout << vertexArrayObjects.size() << std::endl;
 
   // Setup OpenGL state for rendering
   glEnable(GL_DEPTH_TEST);
@@ -208,7 +206,9 @@ int ViewerApplication::run()
 
     // Draw the scene referenced by gltf file
     if (model.defaultScene >= 0) {
-      // TODO Draw all nodes
+      for(int nodeIdx = 0; nodeIdx < model.scenes[model.defaultScene].nodes.size(); nodeIdx++) {
+        drawNode(model.scenes[model.defaultScene].nodes[nodeIdx], glm::mat4(1));
+      }
     }
   };
 
