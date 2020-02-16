@@ -5,7 +5,6 @@
 #else
 #ifdef _MSC_VER
 #if _MSC_VER >= 1923
-#include <filesystem>
 #define USE_STD_FILESYSTEM 1
 #else
 #include <experimental/filesystem>
@@ -19,6 +18,7 @@
 namespace fs = boost::filesystem;
 #else
 #ifdef USE_STD_FILESYSTEM
+#include <filesystem>
 namespace fs = std::filesystem; // Shorter namespace for experimental
                                 // filesystem standard library
 #else

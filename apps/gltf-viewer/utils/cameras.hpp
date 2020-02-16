@@ -118,10 +118,6 @@ public:
     m_up = glm::vec3(rotationMatrix * glm::vec4(m_up, 0));
   }
 
-  // Rotate around the center of the camera, along local axes
-  // todo not implemented yet, needed for TrackballCamera
-  void orbit(float longitudeAngle, float latitudeAngle) {}
-
   const glm::vec3 eye() const { return m_eye; }
 
   const glm::vec3 center() const { return m_center; }
@@ -203,29 +199,51 @@ private:
 class TrackballCameraController
 {
 public:
-  TrackballCameraController(GLFWwindow *window) : m_pWindow(window) {}
-
-  // Update the view matrix based on input events and elapsed time
-  bool update(float elapsedTime);
-
-  // Force a view matrix
-  void setViewMatrix(const glm::mat4 &viewMatrix)
+  TrackballCameraController(GLFWwindow *window, float speed = 1.f,
+      const glm::vec3 &worldUpAxis = glm::vec3(0, 1, 0)) :
+      m_pWindow(window),
+      m_fSpeed(speed),
+      m_worldUpAxis(worldUpAxis),
+      m_camera{glm::vec3(0), glm::vec3(0, 0, -1), glm::vec3(0, 1, 0)}
   {
-    m_ViewMatrix = viewMatrix;
-    m_RcpViewMatrix = glm::inverse(viewMatrix);
   }
 
-  // Get the view matrix
-  const glm::mat4 &getViewMatrix() const { return m_ViewMatrix; }
+  // Controller attributes, if put in a GUI, should be adapted
+  void setSpeed(float speed) { m_fSpeed = speed; }
 
-  const glm::mat4 &getRcpViewMatrix() const { return m_RcpViewMatrix; }
+  float getSpeed() const { return m_fSpeed; }
+
+  void increaseSpeed(float delta)
+  {
+    m_fSpeed += delta;
+    m_fSpeed = glm::max(m_fSpeed, 0.f);
+  }
+
+  const glm::vec3 &getWorldUpAxis() const { return m_worldUpAxis; }
+
+  void setWorldUpAxis(const glm::vec3 &worldUpAxis)
+  {
+    m_worldUpAxis = worldUpAxis;
+  }
+
+  // Update the view matrix based on input events and elapsed time
+  // Return true if the view matrix has been modified
+  bool update(float elapsedTime);
+
+  // Get the view matrix
+  const Camera &getCamera() const { return m_camera; }
+
+  void setCamera(const Camera &camera) { m_camera = camera; }
 
 private:
-  GLFWwindow *m_pWindow;
+  GLFWwindow *m_pWindow = nullptr;
+  float m_fSpeed = 0.f;
+  glm::vec3 m_worldUpAxis;
 
+  // Input event state
   bool m_MiddleButtonPressed = false;
   glm::dvec2 m_LastCursorPosition;
 
-  glm::mat4 m_ViewMatrix = glm::mat4(1);
-  glm::mat4 m_RcpViewMatrix = glm::mat4(1);
+  // Current camera
+  Camera m_camera;
 };
