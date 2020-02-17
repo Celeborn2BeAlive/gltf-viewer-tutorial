@@ -50,6 +50,8 @@ private:
   bool m_hasUserCamera = false;
   Camera m_userCamera;
 
+  GLuint m_whiteTexture = 0;
+
   fs::path m_OutputPath;
 
   // Order is important here, see comment below

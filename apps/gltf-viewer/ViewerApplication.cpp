@@ -42,6 +42,8 @@ int ViewerApplication::run()
   const auto uLightIntensity =
       glGetUniformLocation(glslProgram.glId(), "uLightIntensity");
 
+  const auto uBaseColorTexture =
+      glGetUniformLocation(glslProgram.glId(), "uBaseColorTexture");
   const auto uBaseColorFactor =
       glGetUniformLocation(glslProgram.glId(), "uBaseColorFactor");
 
@@ -79,6 +81,18 @@ int ViewerApplication::run()
 
   // Load textures
   const auto textureObjects = createTextureObjects(model);
+
+  // Create white texture for object with no base color texture
+  glGenTextures(1, &m_whiteTexture);
+  glBindTexture(GL_TEXTURE_2D, m_whiteTexture);
+  float white[] = {1, 1, 1, 1};
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_FLOAT, white);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+  glBindTexture(GL_TEXTURE_2D, 0);
 
   // Load buffers
   const auto bufferObjects = createBufferObjects(model);
@@ -159,6 +173,21 @@ int ViewerApplication::run()
                       (float)pbrMetallicRoughness.baseColorFactor[2],
                       (float)pbrMetallicRoughness.baseColorFactor[3]);
                 }
+                if (uBaseColorTexture >= 0) {
+                  auto textureObject = m_whiteTexture;
+                  if (pbrMetallicRoughness.baseColorTexture.index >= 0) {
+                    const auto &texture =
+                        model.textures[pbrMetallicRoughness.baseColorTexture
+                                           .index];
+                    if (texture.source >= 0) {
+                      textureObject = textureObjects[texture.source];
+                    }
+                  }
+
+                  glActiveTexture(GL_TEXTURE0);
+                  glBindTexture(GL_TEXTURE_2D, textureObject);
+                  glUniform1i(uBaseColorTexture, 0);
+                }
               } else {
                 // Apply default material
                 // Defined here:
@@ -166,6 +195,11 @@ int ViewerApplication::run()
                 // https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#reference-pbrmetallicroughness3
                 if (uBaseColorFactor >= 0) {
                   glUniform4f(uBaseColorFactor, 1, 1, 1, 1);
+                }
+                if (uBaseColorTexture >= 0) {
+                  glActiveTexture(GL_TEXTURE0);
+                  glBindTexture(GL_TEXTURE_2D, m_whiteTexture);
+                  glUniform1i(uBaseColorTexture, 0);
                 }
               }
 
