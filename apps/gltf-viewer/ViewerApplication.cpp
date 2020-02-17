@@ -350,10 +350,48 @@ bool ViewerApplication::loadGltfFile(tinygltf::Model &model)
   return true;
 }
 
+// Texture handling could be optimized by separation of images and texture
+// samplers
 std::vector<GLuint> ViewerApplication::createTextureObjects(
     const tinygltf::Model &model) const
 {
   std::vector<GLuint> textureObjects(model.textures.size(), 0);
+
+  // default sampler:
+  // https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#texturesampler
+  // "When undefined, a sampler with repeat wrapping and auto filtering should
+  // be used."
+  tinygltf::Sampler defaultSampler;
+  defaultSampler.minFilter = TINYGLTF_TEXTURE_FILTER_LINEAR;
+  defaultSampler.magFilter = TINYGLTF_TEXTURE_FILTER_LINEAR;
+  defaultSampler.wrapS = TINYGLTF_TEXTURE_FILTER_LINEAR;
+  defaultSampler.wrapT = TINYGLTF_TEXTURE_FILTER_LINEAR;
+  defaultSampler.wrapR = TINYGLTF_TEXTURE_FILTER_LINEAR;
+
+  glActiveTexture(GL_TEXTURE0);
+
+  glGenTextures(GLsizei(model.textures.size()), textureObjects.data());
+  for (size_t i = 0; i < model.textures.size(); ++i) {
+    const auto &texture = model.textures[i];
+    assert(texture.source >= 0);
+    const auto &image = model.images[texture.source];
+
+    const auto &sampler =
+        texture.sampler >= 0 ? model.samplers[texture.sampler] : defaultSampler;
+    glBindTexture(GL_TEXTURE_2D, textureObjects[i]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0,
+        GL_RGBA, image.pixel_type, image.image.data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+        sampler.minFilter != -1 ? sampler.minFilter
+                                : TINYGLTF_TEXTURE_FILTER_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+        sampler.magFilter != -1 ? sampler.magFilter
+                                : TINYGLTF_TEXTURE_FILTER_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, sampler.wrapS);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, sampler.wrapT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, sampler.wrapR);
+  }
+  glBindTexture(GL_TEXTURE_2D, 0);
 
   return textureObjects;
 }
