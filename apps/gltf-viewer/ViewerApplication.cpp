@@ -77,6 +77,10 @@ int ViewerApplication::run()
   glm::vec3 lightIntensity(1, 1, 1);
   bool lightFromCamera = false;
 
+  // Load textures
+  const auto textureObjects = createTextureObjects(model);
+
+  // Load buffers
   const auto bufferObjects = createBufferObjects(model);
 
   std::vector<VaoRange> meshToVertexArrays;
@@ -346,8 +350,16 @@ bool ViewerApplication::loadGltfFile(tinygltf::Model &model)
   return true;
 }
 
+std::vector<GLuint> ViewerApplication::createTextureObjects(
+    const tinygltf::Model &model) const
+{
+  std::vector<GLuint> textureObjects(model.textures.size(), 0);
+
+  return textureObjects;
+}
+
 std::vector<GLuint> ViewerApplication::createBufferObjects(
-    const tinygltf::Model &model)
+    const tinygltf::Model &model) const
 {
   std::vector<GLuint> bufferObjects(model.buffers.size(), 0);
 
@@ -364,7 +376,7 @@ std::vector<GLuint> ViewerApplication::createBufferObjects(
 
 std::vector<GLuint> ViewerApplication::createVertexArrayObjects(
     const tinygltf::Model &model, const std::vector<GLuint> &bufferObjects,
-    std::vector<VaoRange> &meshToVertexArrays)
+    std::vector<VaoRange> &meshToVertexArrays) const
 {
   std::vector<GLuint> vertexArrayObjects; // We don't know the size yet
 
@@ -411,8 +423,8 @@ std::vector<GLuint> ViewerApplication::createVertexArrayObjects(
           // (glVertexAttribPointer) use what is currently bound
           glBindBuffer(GL_ARRAY_BUFFER, bufferObjects[bufferIdx]);
 
-          // tinygltf converts strings type like "VEC3, "VEC2" to the number of
-          // components, stored in accessor.type
+          // tinygltf converts strings type like "VEC3, "VEC2" to the number
+          // of components, stored in accessor.type
           const auto byteOffset = accessor.byteOffset + bufferView.byteOffset;
           glVertexAttribPointer(VERTEX_ATTRIB_POSITION_IDX, accessor.type,
               accessor.componentType, GL_FALSE, GLsizei(bufferView.byteStride),
@@ -463,10 +475,10 @@ std::vector<GLuint> ViewerApplication::createVertexArrayObjects(
         assert(GL_ELEMENT_ARRAY_BUFFER == bufferView.target);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,
             bufferObjects[bufferIdx]); // Binding the index buffer to
-                                       // GL_ELEMENT_ARRAY_BUFFER while the VAO
-                                       // is bound is enough to tell OpenGL we
-                                       // want to use that index buffer for that
-                                       // VAO
+                                       // GL_ELEMENT_ARRAY_BUFFER while the
+                                       // VAO is bound is enough to tell
+                                       // OpenGL we want to use that index
+                                       // buffer for that VAO
       }
     }
   }

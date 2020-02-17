@@ -73,7 +73,8 @@
     "clocale": "cpp",
     "forward_list": "cpp",
     "string_view": "cpp",
-    "valarray": "cpp"
+    "valarray": "cpp",
+    "cstdarg": "cpp"
   },
   "workbench.colorCustomizations": {
     "titleBar.activeBackground": "#f23016",

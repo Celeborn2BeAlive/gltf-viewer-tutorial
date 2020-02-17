@@ -27,11 +27,14 @@ private:
 
   bool loadGltfFile(tinygltf::Model &model);
 
-  std::vector<GLuint> createBufferObjects(const tinygltf::Model &model);
+  std::vector<GLuint> ViewerApplication::createTextureObjects(
+      const tinygltf::Model &model) const;
+
+  std::vector<GLuint> createBufferObjects(const tinygltf::Model &model) const;
 
   std::vector<GLuint> createVertexArrayObjects(const tinygltf::Model &model,
       const std::vector<GLuint> &bufferObjects,
-      std::vector<VaoRange> &meshToVertexArrays);
+      std::vector<VaoRange> &meshToVertexArrays) const;
 
   GLsizei m_nWindowWidth = 1280;
   GLsizei m_nWindowHeight = 720;
