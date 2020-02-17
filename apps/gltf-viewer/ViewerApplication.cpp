@@ -180,12 +180,12 @@ int ViewerApplication::run()
 
   // TODO Implement a new CameraController model and use it instead. Propose the
   // choice from the GUI
-  TrackballCameraController cameraController{
-      m_GLFWHandle.window(), 3.f * maxDistance};
+  std::unique_ptr<CameraController> cameraController
+    = std::make_unique<TrackballCameraController>(m_GLFWHandle.window(), 3.f * maxDistance);
   if (m_hasUserCamera) {
-    cameraController.setCamera(m_userCamera);
+    cameraController->setCamera(m_userCamera);
   } else {
-    cameraController.setCamera(
+    cameraController->setCamera(
         Camera{eye, center, up});
   }
 
@@ -257,7 +257,7 @@ int ViewerApplication::run()
     size_t numCoponents = 3;
     std::vector<unsigned char> pixels(numCoponents * m_nWindowWidth * m_nWindowHeight);
     renderToImage(m_nWindowWidth, m_nWindowHeight, numCoponents, pixels.data(), [&]() {
-      drawScene(cameraController.getCamera());
+      drawScene(cameraController->getCamera());
     });
     flipImageYAxis(m_nWindowWidth, m_nWindowHeight, numCoponents, pixels.data());
     const auto strPath = m_OutputPath.string();
@@ -271,7 +271,7 @@ int ViewerApplication::run()
        ++iterationCount) {
     const auto seconds = glfwGetTime();
 
-    const auto camera = cameraController.getCamera();
+    const auto camera = cameraController->getCamera();
     drawScene(camera);
 
     // GUI code:
@@ -303,6 +303,21 @@ int ViewerApplication::run()
           const auto str = ss.str();
           glfwSetClipboardString(m_GLFWHandle.window(), str.c_str());
         }
+        static int cameraControllerType = 0;
+        const auto cameraControllerTypeChanged =
+            ImGui::RadioButton("Trackball", &cameraControllerType, 0) ||
+            ImGui::RadioButton("First Person", &cameraControllerType, 1);
+        if (cameraControllerTypeChanged) {
+          const auto currentCamera = cameraController->getCamera();
+          if (cameraControllerType == 0) {
+            cameraController = std::make_unique<TrackballCameraController>(
+                m_GLFWHandle.window(), 0.5f * maxDistance);
+          } else {
+            cameraController = std::make_unique<FirstPersonCameraController>(
+                m_GLFWHandle.window(), 0.5f * maxDistance);
+          }
+          cameraController->setCamera(currentCamera);
+        }
       }
       ImGui::End();
     }
@@ -315,7 +330,7 @@ int ViewerApplication::run()
     auto guiHasFocus =
         ImGui::GetIO().WantCaptureMouse || ImGui::GetIO().WantCaptureKeyboard;
     if (!guiHasFocus) {
-      cameraController.update(float(ellapsedTime));
+      cameraController->update(float(ellapsedTime));
     }
 
     m_GLFWHandle.swapBuffers(); // Swap front and back buffers
