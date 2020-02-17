@@ -7,11 +7,15 @@ in vec2 vTexCoords;
 uniform vec3 uLightDirection;
 uniform vec3 uLightIntensity;
 
+uniform vec4 uBaseColorFactor;
+
 out vec3 fColor;
 
 void main()
 {
   vec3 viewSpaceNormal = normalize(vViewSpaceNormal);
   float oneOverPi = 1. / 3.14;
-  fColor = vec3(oneOverPi) * uLightIntensity*dot(viewSpaceNormal,uLightDirection);
+  vec3 c_diff = vec3(uBaseColorFactor);
+  vec3 diffuse = c_diff * oneOverPi;
+  fColor = diffuse * uLightIntensity*dot(viewSpaceNormal,uLightDirection);
 }

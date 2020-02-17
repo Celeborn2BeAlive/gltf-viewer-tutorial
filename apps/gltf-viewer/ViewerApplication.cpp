@@ -42,6 +42,9 @@ int ViewerApplication::run()
   const auto uLightIntensity =
       glGetUniformLocation(glslProgram.glId(), "uLightIntensity");
 
+  const auto uBaseColorFactor =
+      glGetUniformLocation(glslProgram.glId(), "uBaseColorFactor");
+
   tinygltf::Model model;
   if (!loadGltfFile(model)) {
     return -1;
@@ -139,6 +142,29 @@ int ViewerApplication::run()
             for (size_t pIdx = 0; pIdx < mesh.primitives.size(); ++pIdx) {
               const auto vao = vertexArrayObjects[vaoRange.begin + pIdx];
               const auto &primitive = mesh.primitives[pIdx];
+
+              const auto materialIndex = primitive.material;
+              if (materialIndex >= 0) {
+                const auto &material = model.materials[materialIndex];
+                const auto &pbrMetallicRoughness =
+                    material.pbrMetallicRoughness;
+                if (uBaseColorFactor >= 0) {
+                  glUniform4f(uBaseColorFactor,
+                      (float)pbrMetallicRoughness.baseColorFactor[0],
+                      (float)pbrMetallicRoughness.baseColorFactor[1],
+                      (float)pbrMetallicRoughness.baseColorFactor[2],
+                      (float)pbrMetallicRoughness.baseColorFactor[3]);
+                }
+              } else {
+                // Apply default material
+                // Defined here:
+                // https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#reference-material
+                // https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#reference-pbrmetallicroughness3
+                if (uBaseColorFactor >= 0) {
+                  glUniform4f(uBaseColorFactor, 1, 1, 1, 1);
+                }
+              }
+
               glBindVertexArray(vao);
               if (primitive.indices >= 0) {
                 const auto &accessor = model.accessors[primitive.indices];
