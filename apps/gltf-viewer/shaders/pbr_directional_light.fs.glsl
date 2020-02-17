@@ -13,5 +13,5 @@ void main()
 {
   vec3 viewSpaceNormal = normalize(vViewSpaceNormal);
   float oneOverPi = 1. / 3.14;
-  fColor = vec3(oneOverPi) * uLightIntensity * dot(viewSpaceNormal, uLightDirection);
+  fColor = vec3(oneOverPi) * uLightIntensity*dot(viewSpaceNormal,uLightDirection);
 }
