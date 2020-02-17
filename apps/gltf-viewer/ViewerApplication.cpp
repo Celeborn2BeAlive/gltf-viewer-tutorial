@@ -180,12 +180,11 @@ int ViewerApplication::run()
 
   // TODO Implement a new CameraController model and use it instead. Propose the
   // choice from the GUI
-  FirstPersonCameraController cameraController{
+  TrackballCameraController cameraController{
       m_GLFWHandle.window(), 3.f * maxDistance};
   if (m_hasUserCamera) {
     cameraController.setCamera(m_userCamera);
   } else {
-    std::cout << "Hey" << std::endl;
     cameraController.setCamera(
         Camera{eye, center, up});
   }
