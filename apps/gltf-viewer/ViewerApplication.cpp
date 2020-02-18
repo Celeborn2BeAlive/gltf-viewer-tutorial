@@ -128,6 +128,47 @@ int ViewerApplication::run()
           lightIntensity[2]);
     }
 
+    const auto bindMaterial = [&](const auto materialIndex) {
+      if (materialIndex >= 0) {
+        const auto &material = model.materials[materialIndex];
+        const auto &pbrMetallicRoughness = material.pbrMetallicRoughness;
+        if (uBaseColorFactor >= 0) {
+          glUniform4f(uBaseColorFactor,
+              (float)pbrMetallicRoughness.baseColorFactor[0],
+              (float)pbrMetallicRoughness.baseColorFactor[1],
+              (float)pbrMetallicRoughness.baseColorFactor[2],
+              (float)pbrMetallicRoughness.baseColorFactor[3]);
+        }
+        if (uBaseColorTexture >= 0) {
+          auto textureObject = m_whiteTexture;
+          if (pbrMetallicRoughness.baseColorTexture.index >= 0) {
+            const auto &texture =
+                model.textures[pbrMetallicRoughness.baseColorTexture.index];
+            if (texture.source >= 0) {
+              textureObject = textureObjects[texture.source];
+            }
+          }
+
+          glActiveTexture(GL_TEXTURE0);
+          glBindTexture(GL_TEXTURE_2D, textureObject);
+          glUniform1i(uBaseColorTexture, 0);
+        }
+      } else {
+        // Apply default material
+        // Defined here:
+        // https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#reference-material
+        // https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#reference-pbrmetallicroughness3
+        if (uBaseColorFactor >= 0) {
+          glUniform4f(uBaseColorFactor, 1, 1, 1, 1);
+        }
+        if (uBaseColorTexture >= 0) {
+          glActiveTexture(GL_TEXTURE0);
+          glBindTexture(GL_TEXTURE_2D, m_whiteTexture);
+          glUniform1i(uBaseColorTexture, 0);
+        }
+      }
+    };
+
     // The recursive function that should draw a node
     // We use a std::function because a simple lambda cannot be recursive
     const std::function<void(int, const glm::mat4 &)> drawNode =
@@ -161,47 +202,7 @@ int ViewerApplication::run()
               const auto vao = vertexArrayObjects[vaoRange.begin + pIdx];
               const auto &primitive = mesh.primitives[pIdx];
 
-              const auto materialIndex = primitive.material;
-              if (materialIndex >= 0) {
-                const auto &material = model.materials[materialIndex];
-                const auto &pbrMetallicRoughness =
-                    material.pbrMetallicRoughness;
-                if (uBaseColorFactor >= 0) {
-                  glUniform4f(uBaseColorFactor,
-                      (float)pbrMetallicRoughness.baseColorFactor[0],
-                      (float)pbrMetallicRoughness.baseColorFactor[1],
-                      (float)pbrMetallicRoughness.baseColorFactor[2],
-                      (float)pbrMetallicRoughness.baseColorFactor[3]);
-                }
-                if (uBaseColorTexture >= 0) {
-                  auto textureObject = m_whiteTexture;
-                  if (pbrMetallicRoughness.baseColorTexture.index >= 0) {
-                    const auto &texture =
-                        model.textures[pbrMetallicRoughness.baseColorTexture
-                                           .index];
-                    if (texture.source >= 0) {
-                      textureObject = textureObjects[texture.source];
-                    }
-                  }
-
-                  glActiveTexture(GL_TEXTURE0);
-                  glBindTexture(GL_TEXTURE_2D, textureObject);
-                  glUniform1i(uBaseColorTexture, 0);
-                }
-              } else {
-                // Apply default material
-                // Defined here:
-                // https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#reference-material
-                // https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#reference-pbrmetallicroughness3
-                if (uBaseColorFactor >= 0) {
-                  glUniform4f(uBaseColorFactor, 1, 1, 1, 1);
-                }
-                if (uBaseColorTexture >= 0) {
-                  glActiveTexture(GL_TEXTURE0);
-                  glBindTexture(GL_TEXTURE_2D, m_whiteTexture);
-                  glUniform1i(uBaseColorTexture, 0);
-                }
-              }
+              bindMaterial(primitive.material);
 
               glBindVertexArray(vao);
               if (primitive.indices >= 0) {
