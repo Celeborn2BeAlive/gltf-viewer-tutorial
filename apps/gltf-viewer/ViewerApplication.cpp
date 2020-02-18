@@ -47,6 +47,13 @@ int ViewerApplication::run()
   const auto uBaseColorFactor =
       glGetUniformLocation(glslProgram.glId(), "uBaseColorFactor");
 
+  const auto uMetallicRoughnessTexture =
+      glGetUniformLocation(glslProgram.glId(), "uMetallicRoughnessTexture");
+  const auto uMetallicFactor =
+      glGetUniformLocation(glslProgram.glId(), "uMetallicFactor");
+  const auto uRoughnessFactor =
+      glGetUniformLocation(glslProgram.glId(), "uRoughnessFactor");
+
   tinygltf::Model model;
   if (!loadGltfFile(model)) {
     return -1;
@@ -153,6 +160,29 @@ int ViewerApplication::run()
           glBindTexture(GL_TEXTURE_2D, textureObject);
           glUniform1i(uBaseColorTexture, 0);
         }
+        if (uMetallicFactor >= 0) {
+          glUniform1f(
+              uMetallicFactor, (float)pbrMetallicRoughness.metallicFactor);
+        }
+        if (uRoughnessFactor >= 0) {
+          glUniform1f(
+              uRoughnessFactor, (float)pbrMetallicRoughness.roughnessFactor);
+        }
+        if (uMetallicRoughnessTexture > 0) {
+          auto textureObject = 0u;
+          if (pbrMetallicRoughness.metallicRoughnessTexture.index >= 0) {
+            const auto &texture =
+                model.textures[pbrMetallicRoughness.metallicRoughnessTexture
+                                   .index];
+            if (texture.source >= 0) {
+              textureObject = textureObjects[texture.source];
+            }
+          }
+
+          glActiveTexture(GL_TEXTURE1);
+          glBindTexture(GL_TEXTURE_2D, textureObject);
+          glUniform1i(uMetallicRoughnessTexture, 1);
+        }
       } else {
         // Apply default material
         // Defined here:
@@ -165,6 +195,17 @@ int ViewerApplication::run()
           glActiveTexture(GL_TEXTURE0);
           glBindTexture(GL_TEXTURE_2D, m_whiteTexture);
           glUniform1i(uBaseColorTexture, 0);
+        }
+        if (uMetallicFactor >= 0) {
+          glUniform1f(uMetallicFactor, 1.f);
+        }
+        if (uRoughnessFactor >= 0) {
+          glUniform1f(uRoughnessFactor, 1.f);
+        }
+        if (uMetallicRoughnessTexture > 0) {
+          glActiveTexture(GL_TEXTURE1);
+          glBindTexture(GL_TEXTURE_2D, 0);
+          glUniform1i(uMetallicRoughnessTexture, 1);
         }
       }
     };
@@ -255,7 +296,8 @@ int ViewerApplication::run()
     stbi_write_png(
         strPath.c_str(), m_nWindowWidth, m_nWindowHeight, 3, pixels.data(), 0);
 
-    return 0; // Exit, in that mode we don't want to run interactive viewer
+    return 0; // Exit, in that mode we don't want to run interactive
+              // viewer
   }
 
   // Loop until the user closes the window
@@ -417,14 +459,19 @@ std::vector<GLuint> ViewerApplication::createTextureObjects(
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0,
         GL_RGBA, image.pixel_type, image.image.data());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-        sampler.minFilter != -1 ? sampler.minFilter
-                                : TINYGLTF_TEXTURE_FILTER_LINEAR);
+        sampler.minFilter != -1 ? sampler.minFilter : GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-        sampler.magFilter != -1 ? sampler.magFilter
-                                : TINYGLTF_TEXTURE_FILTER_LINEAR);
+        sampler.magFilter != -1 ? sampler.magFilter : GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, sampler.wrapS);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, sampler.wrapT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, sampler.wrapR);
+
+    if (sampler.minFilter == GL_NEAREST_MIPMAP_NEAREST ||
+        sampler.minFilter == GL_NEAREST_MIPMAP_LINEAR ||
+        sampler.minFilter == GL_LINEAR_MIPMAP_NEAREST ||
+        sampler.minFilter == GL_LINEAR_MIPMAP_LINEAR) {
+      glGenerateMipmap(GL_TEXTURE_2D);
+    }
   }
   glBindTexture(GL_TEXTURE_2D, 0);
 
