@@ -439,11 +439,11 @@ std::vector<GLuint> ViewerApplication::createTextureObjects(
   // "When undefined, a sampler with repeat wrapping and auto filtering should
   // be used."
   tinygltf::Sampler defaultSampler;
-  defaultSampler.minFilter = TINYGLTF_TEXTURE_FILTER_LINEAR;
-  defaultSampler.magFilter = TINYGLTF_TEXTURE_FILTER_LINEAR;
-  defaultSampler.wrapS = TINYGLTF_TEXTURE_FILTER_LINEAR;
-  defaultSampler.wrapT = TINYGLTF_TEXTURE_FILTER_LINEAR;
-  defaultSampler.wrapR = TINYGLTF_TEXTURE_FILTER_LINEAR;
+  defaultSampler.minFilter = GL_LINEAR;
+  defaultSampler.magFilter = GL_LINEAR;
+  defaultSampler.wrapS = GL_REPEAT;
+  defaultSampler.wrapT = GL_REPEAT;
+  defaultSampler.wrapR = GL_REPEAT;
 
   glActiveTexture(GL_TEXTURE0);
 
