@@ -89,9 +89,11 @@ int ViewerApplication::run()
   // Load textures
   const auto textureObjects = createTextureObjects(model);
 
+  GLuint whiteTexture = 0;
+
   // Create white texture for object with no base color texture
-  glGenTextures(1, &m_whiteTexture);
-  glBindTexture(GL_TEXTURE_2D, m_whiteTexture);
+  glGenTextures(1, &whiteTexture);
+  glBindTexture(GL_TEXTURE_2D, whiteTexture);
   float white[] = {1, 1, 1, 1};
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_FLOAT, white);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -111,6 +113,81 @@ int ViewerApplication::run()
   // Setup OpenGL state for rendering
   glEnable(GL_DEPTH_TEST);
   glslProgram.use();
+
+  const auto bindMaterial = [&](const auto materialIndex) {
+    if (materialIndex >= 0) {
+      const auto &material = model.materials[materialIndex];
+      const auto &pbrMetallicRoughness = material.pbrMetallicRoughness;
+      if (uBaseColorFactor >= 0) {
+        glUniform4f(uBaseColorFactor,
+            (float)pbrMetallicRoughness.baseColorFactor[0],
+            (float)pbrMetallicRoughness.baseColorFactor[1],
+            (float)pbrMetallicRoughness.baseColorFactor[2],
+            (float)pbrMetallicRoughness.baseColorFactor[3]);
+      }
+      if (uBaseColorTexture >= 0) {
+        auto textureObject = whiteTexture;
+        if (pbrMetallicRoughness.baseColorTexture.index >= 0) {
+          const auto &texture =
+              model.textures[pbrMetallicRoughness.baseColorTexture.index];
+          if (texture.source >= 0) {
+            textureObject = textureObjects[texture.source];
+          }
+        }
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textureObject);
+        glUniform1i(uBaseColorTexture, 0);
+      }
+      if (uMetallicFactor >= 0) {
+        glUniform1f(
+            uMetallicFactor, (float)pbrMetallicRoughness.metallicFactor);
+      }
+      if (uRoughnessFactor >= 0) {
+        glUniform1f(
+            uRoughnessFactor, (float)pbrMetallicRoughness.roughnessFactor);
+      }
+      if (uMetallicRoughnessTexture > 0) {
+        auto textureObject = 0u;
+        if (pbrMetallicRoughness.metallicRoughnessTexture.index >= 0) {
+          const auto &texture =
+              model.textures[pbrMetallicRoughness.metallicRoughnessTexture
+                                 .index];
+          if (texture.source >= 0) {
+            textureObject = textureObjects[texture.source];
+          }
+        }
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, textureObject);
+        glUniform1i(uMetallicRoughnessTexture, 1);
+      }
+    } else {
+      // Apply default material
+      // Defined here:
+      // https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#reference-material
+      // https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#reference-pbrmetallicroughness3
+      if (uBaseColorFactor >= 0) {
+        glUniform4f(uBaseColorFactor, 1, 1, 1, 1);
+      }
+      if (uBaseColorTexture >= 0) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, whiteTexture);
+        glUniform1i(uBaseColorTexture, 0);
+      }
+      if (uMetallicFactor >= 0) {
+        glUniform1f(uMetallicFactor, 1.f);
+      }
+      if (uRoughnessFactor >= 0) {
+        glUniform1f(uRoughnessFactor, 1.f);
+      }
+      if (uMetallicRoughnessTexture > 0) {
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glUniform1i(uMetallicRoughnessTexture, 1);
+      }
+    }
+  };
 
   // Lambda function to draw the scene
   const auto drawScene = [&](const Camera &camera) {
@@ -134,81 +211,6 @@ int ViewerApplication::run()
       glUniform3f(uLightIntensity, lightIntensity[0], lightIntensity[1],
           lightIntensity[2]);
     }
-
-    const auto bindMaterial = [&](const auto materialIndex) {
-      if (materialIndex >= 0) {
-        const auto &material = model.materials[materialIndex];
-        const auto &pbrMetallicRoughness = material.pbrMetallicRoughness;
-        if (uBaseColorFactor >= 0) {
-          glUniform4f(uBaseColorFactor,
-              (float)pbrMetallicRoughness.baseColorFactor[0],
-              (float)pbrMetallicRoughness.baseColorFactor[1],
-              (float)pbrMetallicRoughness.baseColorFactor[2],
-              (float)pbrMetallicRoughness.baseColorFactor[3]);
-        }
-        if (uBaseColorTexture >= 0) {
-          auto textureObject = m_whiteTexture;
-          if (pbrMetallicRoughness.baseColorTexture.index >= 0) {
-            const auto &texture =
-                model.textures[pbrMetallicRoughness.baseColorTexture.index];
-            if (texture.source >= 0) {
-              textureObject = textureObjects[texture.source];
-            }
-          }
-
-          glActiveTexture(GL_TEXTURE0);
-          glBindTexture(GL_TEXTURE_2D, textureObject);
-          glUniform1i(uBaseColorTexture, 0);
-        }
-        if (uMetallicFactor >= 0) {
-          glUniform1f(
-              uMetallicFactor, (float)pbrMetallicRoughness.metallicFactor);
-        }
-        if (uRoughnessFactor >= 0) {
-          glUniform1f(
-              uRoughnessFactor, (float)pbrMetallicRoughness.roughnessFactor);
-        }
-        if (uMetallicRoughnessTexture > 0) {
-          auto textureObject = 0u;
-          if (pbrMetallicRoughness.metallicRoughnessTexture.index >= 0) {
-            const auto &texture =
-                model.textures[pbrMetallicRoughness.metallicRoughnessTexture
-                                   .index];
-            if (texture.source >= 0) {
-              textureObject = textureObjects[texture.source];
-            }
-          }
-
-          glActiveTexture(GL_TEXTURE1);
-          glBindTexture(GL_TEXTURE_2D, textureObject);
-          glUniform1i(uMetallicRoughnessTexture, 1);
-        }
-      } else {
-        // Apply default material
-        // Defined here:
-        // https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#reference-material
-        // https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#reference-pbrmetallicroughness3
-        if (uBaseColorFactor >= 0) {
-          glUniform4f(uBaseColorFactor, 1, 1, 1, 1);
-        }
-        if (uBaseColorTexture >= 0) {
-          glActiveTexture(GL_TEXTURE0);
-          glBindTexture(GL_TEXTURE_2D, m_whiteTexture);
-          glUniform1i(uBaseColorTexture, 0);
-        }
-        if (uMetallicFactor >= 0) {
-          glUniform1f(uMetallicFactor, 1.f);
-        }
-        if (uRoughnessFactor >= 0) {
-          glUniform1f(uRoughnessFactor, 1.f);
-        }
-        if (uMetallicRoughnessTexture > 0) {
-          glActiveTexture(GL_TEXTURE1);
-          glBindTexture(GL_TEXTURE_2D, 0);
-          glUniform1i(uMetallicRoughnessTexture, 1);
-        }
-      }
-    };
 
     // The recursive function that should draw a node
     // We use a std::function because a simple lambda cannot be recursive
