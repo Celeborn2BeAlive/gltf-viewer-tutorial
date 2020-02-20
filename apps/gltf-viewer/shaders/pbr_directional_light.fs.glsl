@@ -72,11 +72,12 @@ void main()
   vec3 dielectricSpecular = vec3(0.04);
   vec3 black = vec3(0.);
 
-  vec3 c_diff = mix(black, baseColor.rgb * (1 - dielectricSpecular.r), metallic);
-  vec3 F_0 = mix(baseColor.rgb, vec3(dielectricSpecular), metallic);
+  vec3 c_diff = mix(baseColor.rgb * (1 - dielectricSpecular.r), black, metallic);
+  vec3 F_0 = mix(vec3(dielectricSpecular) ,baseColor.rgb, metallic);
   float alpha = roughness * roughness;
 
-  float baseShlickFactor = 1 - clamp(dot(V, N), 0, 1);
+  float VdotH = clamp(dot(V, H), 0, 1);
+  float baseShlickFactor = 1 - VdotH;
   float shlickFactor = baseShlickFactor * baseShlickFactor; // power 2
   shlickFactor *= shlickFactor; // power 4
   shlickFactor *= baseShlickFactor; // power 5
