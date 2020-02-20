@@ -59,7 +59,6 @@ void main()
   vec3 L = uLightDirection;
   vec3 H = normalize(L + V);
 
-  vec4 test = texture(uBaseColorTexture,vTexCoords);
   vec4 baseColorFromTexture = SRGBtoLINEAR(texture(uBaseColorTexture, vTexCoords));
   vec4 metallicRougnessFromTexture = texture(uMetallicRoughnessTexture, vTexCoords);
 
@@ -99,5 +98,5 @@ void main()
   vec3 diffuse = c_diff * M_1_PI;
 
   vec3 f_diffuse = (1 - F) * diffuse;
-  fColor = test.rgb*uLightIntensity*NdotL;// LINEARtoSRGB((f_diffuse + f_specular) * uLightIntensity * NdotL);
+  fColor = LINEARtoSRGB((f_diffuse + f_specular) * uLightIntensity * NdotL);
 }
