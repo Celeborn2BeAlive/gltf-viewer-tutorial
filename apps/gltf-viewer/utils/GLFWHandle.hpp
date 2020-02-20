@@ -28,7 +28,7 @@ public:
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
@@ -43,7 +43,7 @@ public:
     }
 
     glfwMakeContextCurrent(m_pWindow);
-
+    
     glfwSwapInterval(0); // No VSync
 
     if (!gladLoadGL()) {
@@ -51,7 +51,7 @@ public:
       throw std::runtime_error("Unable to init OpenGL.\n");
     }
 
-    initGLDebugOutput();
+    //initGLDebugOutput();
 
     // Setup ImGui
     ImGui::CreateContext();

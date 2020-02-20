@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 cmake_policy(SET CMP0048 NEW)
+cmake_policy(SET CMP0072 NEW)
 
 project(gltf-viewer-tutorial VERSION 0.0.1)
 
@@ -80,8 +81,8 @@ if (GLMLV_USE_BOOST_FILESYSTEM)
     set(LIBRARIES ${LIBRARIES} ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
 endif()
 
-source_group ("glsl" REGULAR_EXPRESSION "*/*.glsl")
-source_group ("third-party" REGULAR_EXPRESSION "third-party/*.*")
+source_group ("glsl" REGULAR_EXPRESSION ".*/.*[.]glsl")
+source_group ("third-party" REGULAR_EXPRESSION "third-party/.*[.].*")
 
 file(GLOB APP_DIRECTORIES "apps/*")
 foreach(DIR ${APP_DIRECTORIES})
@@ -152,7 +153,7 @@ foreach(DIR ${APP_DIRECTORIES})
     install(
         DIRECTORY ${DIR}/shaders/
         DESTINATION shaders/${APP}
-        FILES_MATCHING PATTERN "*.glsl"
+        FILES_MATCHING PATTERN ".*[.]glsl"
     )
 
     if(EXISTS ${DIR}/assets/)

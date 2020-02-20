@@ -5,6 +5,8 @@
 #include "utils/filesystem.hpp"
 #include "utils/shaders.hpp"
 
+#include <tiny_gltf.h>
+
 class ViewerApplication
 {
 public:
@@ -12,6 +14,8 @@ public:
       const fs::path &gltfFile, const std::vector<float> &lookatArgs,
       const std::string &vertexShader, const std::string &fragmentShader,
       const fs::path &output);
+
+  bool loadGltfFile(tinygltf::Model & model);
 
   int run();
 
