@@ -74,6 +74,23 @@ int ViewerApplication::run()
   glm::vec3 lightIntensity(1, 1, 1);
   bool lightFromCamera = false;
 
+  // Load textures
+  const auto textureObjects = createTextureObjects(model);
+
+  // Create white texture for object with no base color texture
+  GLuint whiteTexture = 0;
+  glGenTextures(1, &whiteTexture);
+  glBindTexture(GL_TEXTURE_2D, whiteTexture);
+  float white[] = {1, 1, 1, 1};
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_FLOAT, white);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT);
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  // Load buffers
   const auto bufferObjects = createBufferObjects(model);
 
   std::vector<VaoRange> meshToVertexArrays;
@@ -318,6 +335,57 @@ bool ViewerApplication::loadGltfFile(tinygltf::Model &model)
   }
 
   return true;
+}
+
+// Texture handling could be optimized by separation of images and texture
+// samplers
+std::vector<GLuint> ViewerApplication::createTextureObjects(
+    const tinygltf::Model &model) const
+{
+  std::vector<GLuint> textureObjects(model.textures.size(), 0);
+
+  // default sampler:
+  // https://github.com/KhronosGroup/glTF/blob/master/specification/2.0/README.md#texturesampler
+  // "When undefined, a sampler with repeat wrapping and auto filtering should
+  // be used."
+  tinygltf::Sampler defaultSampler;
+  defaultSampler.minFilter = GL_LINEAR;
+  defaultSampler.magFilter = GL_LINEAR;
+  defaultSampler.wrapS = GL_REPEAT;
+  defaultSampler.wrapT = GL_REPEAT;
+  defaultSampler.wrapR = GL_REPEAT;
+
+  glActiveTexture(GL_TEXTURE0);
+
+  glGenTextures(GLsizei(model.textures.size()), textureObjects.data());
+  for (size_t i = 0; i < model.textures.size(); ++i) {
+    const auto &texture = model.textures[i];
+    assert(texture.source >= 0);
+    const auto &image = model.images[texture.source];
+
+    const auto &sampler =
+        texture.sampler >= 0 ? model.samplers[texture.sampler] : defaultSampler;
+    glBindTexture(GL_TEXTURE_2D, textureObjects[i]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0,
+        GL_RGBA, image.pixel_type, image.image.data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+        sampler.minFilter != -1 ? sampler.minFilter : GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+        sampler.magFilter != -1 ? sampler.magFilter : GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, sampler.wrapS);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, sampler.wrapT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, sampler.wrapR);
+
+    if (sampler.minFilter == GL_NEAREST_MIPMAP_NEAREST ||
+        sampler.minFilter == GL_NEAREST_MIPMAP_LINEAR ||
+        sampler.minFilter == GL_LINEAR_MIPMAP_NEAREST ||
+        sampler.minFilter == GL_LINEAR_MIPMAP_LINEAR) {
+      glGenerateMipmap(GL_TEXTURE_2D);
+    }
+  }
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  return textureObjects;
 }
 
 std::vector<GLuint> ViewerApplication::createBufferObjects(
