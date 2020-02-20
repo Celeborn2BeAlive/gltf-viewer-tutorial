@@ -38,6 +38,18 @@ bool ViewerApplication::loadGltfFile(tinygltf::Model & model) {
     return true;
 }
 
+std::vector<GLuint> ViewerApplication::createBufferObjects(const tinygltf::Model &model) {
+    std::vector<GLuint> bufferObjects(model.buffers.size(), 0);
+    glGenBuffers(model.buffers.size(), bufferObjects.data());
+    for(int i = 0; i < model.buffers.size(); i++) {
+        glBindBuffer(GL_ARRAY_BUFFER, bufferObjects[i]);
+        // My GL version is 4.2 (< 4.4) :-/
+        glBufferData(GL_ARRAY_BUFFER, model.buffers[i].data.size(), model.buffers[i].data.data(), GL_STATIC_DRAW); 
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    return bufferObjects;
+}
+
 int ViewerApplication::run()
 {
   // Loader shaders
@@ -72,9 +84,10 @@ int ViewerApplication::run()
   }
 
   tinygltf::Model model;
-  loadGltfFile(model);
-
-  // TODO Creation of Buffer Objects
+  if(!loadGltfFile(model)) {
+    return -1;
+  }
+  const std::vector<GLuint> bufferObjects = createBufferObjects(model);
 
   // TODO Creation of Vertex Array Objects
 

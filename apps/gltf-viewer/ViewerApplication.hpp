@@ -16,6 +16,7 @@ public:
       const fs::path &output);
 
   bool loadGltfFile(tinygltf::Model & model);
+  std::vector<GLuint> createBufferObjects(const tinygltf::Model &model);
 
   int run();
 
