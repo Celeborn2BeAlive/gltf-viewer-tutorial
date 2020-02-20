@@ -27,8 +27,7 @@ private:
 
   bool loadGltfFile(tinygltf::Model &model);
 
-  std::vector<GLuint> ViewerApplication::createTextureObjects(
-      const tinygltf::Model &model) const;
+  std::vector<GLuint> createTextureObjects(const tinygltf::Model &model) const;
 
   std::vector<GLuint> createBufferObjects(const tinygltf::Model &model) const;
 
