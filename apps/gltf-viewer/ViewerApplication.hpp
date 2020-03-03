@@ -15,9 +15,6 @@ public:
       const std::string &vertexShader, const std::string &fragmentShader,
       const fs::path &output);
 
-  bool loadGltfFile(tinygltf::Model & model);
-  std::vector<GLuint> createBufferObjects(const tinygltf::Model &model);
-
   int run();
 
 private:
@@ -27,6 +24,10 @@ private:
     GLsizei begin; // Index of first element in vertexArrayObjects
     GLsizei count; // Number of elements in range
   };
+
+  bool loadGltfFile(tinygltf::Model &model);
+  std::vector<GLuint> createBufferObjects(const tinygltf::Model &model);
+  std::vector<GLuint> createVertexArrayObjects(const tinygltf::Model &model, const std::vector<GLuint> &bufferObjects, std::vector<VaoRange> &meshIndexToVaoRange);
 
   GLsizei m_nWindowWidth = 1280;
   GLsizei m_nWindowHeight = 720;
