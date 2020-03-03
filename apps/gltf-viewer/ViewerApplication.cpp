@@ -153,7 +153,10 @@ int ViewerApplication::run()
 
     // Draw the scene referenced by gltf file
     if (model.defaultScene >= 0) {
-      // TODO Draw all nodes
+    	const tinygltf::Scene scene = model.scenes[model.defaultScene];
+    	for(int nodeIdx = 0; nodeIdx < scene.nodes.size(); nodeIdx++) {
+    		drawNode(nodeIdx, glm::mat4(1));
+    	}
     }
   };
 
