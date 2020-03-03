@@ -9,6 +9,7 @@
 #include <glm/gtx/io.hpp>
 
 #include "utils/cameras.hpp"
+#include "utils/gltf.hpp"
 
 #include <stb_image_write.h>
 #include <tiny_gltf.h>
@@ -148,13 +149,41 @@ int ViewerApplication::run()
     // We use a std::function because a simple lambda cannot be recursive
     const std::function<void(int, const glm::mat4 &)> drawNode =
         [&](int nodeIdx, const glm::mat4 &parentMatrix) {
-          // TODO The drawNode function
+          	const tinygltf::Node &node = model.nodes[nodeIdx];
+          	glm::mat4 modelMatrix = getLocalToWorldMatrix(node, parentMatrix);
+          	if(node.mesh >= 0) {
+          		glm::mat4 modelViewMatrix = viewMatrix * modelMatrix;
+          		glm::mat4 modelViewProjectionMatrix = projMatrix * modelViewMatrix;
+          		glm::mat4 normalMatrix = glm::transpose(glm::inverse(modelViewMatrix));
+          		glUniformMatrix4fv(modelViewMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
+          		glUniformMatrix4fv(modelViewProjMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelViewProjectionMatrix));
+          		glUniformMatrix4fv(normalMatrixLocation, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+          		const tinygltf::Mesh &mesh = model.meshes[node.mesh];
+          		const VaoRange &vaoRange = meshToVertexArrays[node.mesh];
+          		for(GLsizei primIdx = vaoRange.begin; primIdx < vaoRange.count; primIdx++) {
+          			const GLuint vao = vertexArrayObjects[vaoRange.begin + primIdx];
+          			glBindVertexArray(vao);
+          			const tinygltf::Primitive &primitive = mesh.primitives[primIdx];
+          			if(primitive.indices >= 0) {
+          				const tinygltf::Accessor &accessor = model.accessors[primitive.indices];
+          				const tinygltf::BufferView &bufferView = model.bufferViews[accessor.bufferView];
+          				const size_t byteOffset = accessor.byteOffset + bufferView.byteOffset;
+          				glDrawElements(primitive.mode, accessor.count, accessor.componentType, (const GLvoid*)byteOffset);
+          			} else {
+          				const int accessorIdx = (*begin(primitive.attributes)).second;
+          				const tinygltf::Accessor &accessor = model.accessors[accessorIdx];
+          				glDrawArrays(primitive.mode, 0, accessor.count);
+          			}
+          		}
+          	}
+          	for(int child : node.children) {
+          		drawNode(child, modelMatrix);
+          	}
         };
 
     // Draw the scene referenced by gltf file
     if (model.defaultScene >= 0) {
-    	const tinygltf::Scene scene = model.scenes[model.defaultScene];
-    	for(int nodeIdx = 0; nodeIdx < scene.nodes.size(); nodeIdx++) {
+    	for(int nodeIdx = 0; nodeIdx < model.scenes[model.defaultScene].nodes.size(); nodeIdx++) {
     		drawNode(nodeIdx, glm::mat4(1));
     	}
     }
