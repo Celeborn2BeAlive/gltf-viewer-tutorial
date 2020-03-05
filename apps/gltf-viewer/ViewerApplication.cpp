@@ -152,7 +152,7 @@ int ViewerApplication::run()
         glUniform1f(
             uRoughnessFactor, (float)pbrMetallicRoughness.roughnessFactor);
       }
-      if (uMetallicRoughnessTexture > 0) {
+      if (uMetallicRoughnessTexture >= 0) {
         auto textureObject = 0u;
         if (pbrMetallicRoughness.metallicRoughnessTexture.index >= 0) {
           const auto &texture =
@@ -204,10 +204,18 @@ int ViewerApplication::run()
       if (uRoughnessFactor >= 0) {
         glUniform1f(uRoughnessFactor, 1.f);
       }
-      if (uMetallicRoughnessTexture > 0) {
+      if (uMetallicRoughnessTexture >= 0) {
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, 0);
         glUniform1i(uMetallicRoughnessTexture, 1);
+      }
+      if (uEmissiveFactor >= 0) {
+        glUniform3f(uEmissiveFactor, 0.f, 0.f, 0.f);
+      }
+      if (uEmissiveTexture >= 0) {
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glUniform1i(uEmissiveTexture, 2);
       }
     }
   };
