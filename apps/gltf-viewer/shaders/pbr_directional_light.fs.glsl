@@ -25,6 +25,8 @@ uniform sampler2D uMetallicRoughnessTexture;
 uniform sampler2D uEmissiveTexture;
 uniform sampler2D uOcclusionTexture;
 
+uniform int uApplyOcclusion;
+
 out vec3 fColor;
 
 // Constants
@@ -108,8 +110,10 @@ void main()
   vec3 color = (f_diffuse + f_specular) * uLightIntensity * NdotL;
   color += emissive;
 
-  // float ao = texture2D(uOcclusionTexture, vTexCoords).r;
-  // color = mix(color, color * ao, uOcclusionStrength);
-
+  if (1 == uApplyOcclusion) {
+    float ao = texture2D(uOcclusionTexture, vTexCoords).r;
+    color = mix(color, color * ao, uOcclusionStrength);
+  }
+  
   fColor = LINEARtoSRGB(color);
 }

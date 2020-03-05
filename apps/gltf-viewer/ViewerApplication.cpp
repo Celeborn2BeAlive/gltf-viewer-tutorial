@@ -59,6 +59,13 @@ int ViewerApplication::run()
   const auto uEmissiveFactor =
       glGetUniformLocation(glslProgram.glId(), "uEmissiveFactor");
 
+  const auto uOcclusionTexture =
+      glGetUniformLocation(glslProgram.glId(), "uOcclusionTexture");
+  const auto uOcclusionStrength =
+      glGetUniformLocation(glslProgram.glId(), "uOcclusionStrength");
+  const auto uApplyOcclusion =
+      glGetUniformLocation(glslProgram.glId(), "uApplyOcclusion");
+
   tinygltf::Model model;
   if (!loadGltfFile(model)) {
     return -1;
@@ -90,6 +97,7 @@ int ViewerApplication::run()
   glm::vec3 lightDirection(1, 1, 1);
   glm::vec3 lightIntensity(1, 1, 1);
   bool lightFromCamera = false;
+  bool applyOcclusion = true;
 
   // Load textures
   const auto textureObjects = createTextureObjects(model);
@@ -185,6 +193,23 @@ int ViewerApplication::run()
         glBindTexture(GL_TEXTURE_2D, textureObject);
         glUniform1i(uEmissiveTexture, 2);
       }
+      if (uOcclusionStrength >= 0) {
+        glUniform1f(
+            uOcclusionStrength, (float)material.occlusionTexture.strength);
+      }
+      if (uOcclusionTexture >= 0) {
+        auto textureObject = whiteTexture;
+        if (material.occlusionTexture.index >= 0) {
+          const auto &texture = model.textures[material.occlusionTexture.index];
+          if (texture.source >= 0) {
+            textureObject = textureObjects[texture.source];
+          }
+        }
+
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, textureObject);
+        glUniform1i(uOcclusionTexture, 3);
+      }
     } else {
       // Apply default material
       // Defined here:
@@ -217,6 +242,14 @@ int ViewerApplication::run()
         glBindTexture(GL_TEXTURE_2D, 0);
         glUniform1i(uEmissiveTexture, 2);
       }
+      if (uOcclusionStrength >= 0) {
+        glUniform1f(uOcclusionStrength, 0.f);
+      }
+      if (uOcclusionTexture >= 0) {
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glUniform1i(uOcclusionTexture, 3);
+      }
     }
   };
 
@@ -241,6 +274,10 @@ int ViewerApplication::run()
     if (uLightIntensity >= 0) {
       glUniform3f(uLightIntensity, lightIntensity[0], lightIntensity[1],
           lightIntensity[2]);
+    }
+
+    if (uApplyOcclusion >= 0) {
+      glUniform1i(uApplyOcclusion, applyOcclusion);
     }
 
     // The recursive function that should draw a node
@@ -410,6 +447,7 @@ int ViewerApplication::run()
         }
 
         ImGui::Checkbox("light from camera", &lightFromCamera);
+        ImGui::Checkbox("apply occlusion", &applyOcclusion);
       }
       ImGui::End();
     }
