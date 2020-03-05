@@ -54,6 +54,11 @@ int ViewerApplication::run()
   const auto uRoughnessFactor =
       glGetUniformLocation(glslProgram.glId(), "uRoughnessFactor");
 
+  const auto uEmissiveTexture =
+      glGetUniformLocation(glslProgram.glId(), "uEmissiveTexture");
+  const auto uEmissiveFactor =
+      glGetUniformLocation(glslProgram.glId(), "uEmissiveFactor");
+
   tinygltf::Model model;
   if (!loadGltfFile(model)) {
     return -1;
@@ -161,6 +166,24 @@ int ViewerApplication::run()
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, textureObject);
         glUniform1i(uMetallicRoughnessTexture, 1);
+      }
+      if (uEmissiveFactor >= 0) {
+        glUniform3f(uEmissiveFactor, (float)material.emissiveFactor[0],
+            (float)material.emissiveFactor[1],
+            (float)material.emissiveFactor[2]);
+      }
+      if (uEmissiveTexture >= 0) {
+        auto textureObject = 0u;
+        if (material.emissiveTexture.index >= 0) {
+          const auto &texture = model.textures[material.emissiveTexture.index];
+          if (texture.source >= 0) {
+            textureObject = textureObjects[texture.source];
+          }
+        }
+
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, textureObject);
+        glUniform1i(uEmissiveTexture, 2);
       }
     } else {
       // Apply default material
